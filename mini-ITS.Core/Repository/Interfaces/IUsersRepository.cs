@@ -11,5 +11,7 @@ namespace mini_ITS.Core.Repository
         Task<IEnumerable<Users>> GetAllAsync();
         Task<SqlPagedResult<Users>> GetAllAsync(SqlPagedQuery<Users> sqlPagedQuery);
         Task<Users> GetUserAsync(Guid id);
+        Task<Users> GetUserAsync(string login);
+
     }
 }
