@@ -67,9 +67,25 @@ namespace mini_ITS.Core.Repository
                             Value = new string(login)
                         }
                     );
-
                 var user = await sqlConnection.QueryFirstOrDefaultAsync<Users>(sqlQueryBuilder.GetSelectQuery());
                 return user;
+            }
+        }
+        public async Task<string> GetUserFullNameAsync(Guid id)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
+                    .WithFilter(
+                        new SqlQueryCondition
+                        {
+                            Name = "Id",
+                            Operator = SqlQueryOperator.Equal,
+                            Value = new string(id.ToString())
+                        }
+                    );
+                var user = await sqlConnection.QueryFirstOrDefaultAsync<Users>(sqlQueryBuilder.GetSelectQuery());
+                return $"{user.FirstName} {user.LastName}";
             }
         }
     }
