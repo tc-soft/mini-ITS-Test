@@ -15,5 +15,6 @@ namespace mini_ITS.Core.Repository
         Task<string> GetUserFullNameAsync(Guid id);
         Task<string> GetUserDepartmentNameAsync(string login);
         Task<IEnumerable<string>> GetUsersAsync(string role);
+        Task<IEnumerable<string>> GetUsersAsync(string role, string department);
     }
 }
