@@ -8,13 +8,17 @@ namespace mini_ITS.Core.Repository
 {
     public interface IUsersRepository
     {
-        Task<IEnumerable<Users>> GetAllAsync();
-        Task<SqlPagedResult<Users>> GetAllAsync(SqlPagedQuery<Users> sqlPagedQuery);
-        Task<Users> GetUserAsync(Guid id);
-        Task<Users> GetUserAsync(string login);
-        Task<string> GetUserFullNameAsync(Guid id);
-        Task<string> GetUserDepartmentNameAsync(string login);
-        Task<IEnumerable<string>> GetUsersAsync(string role);
-        Task<IEnumerable<string>> GetUsersAsync(string role, string department);
+        Task<IEnumerable<Users>> GetAsync();
+        Task<IEnumerable<Users>> GetAsync(string role, string department);
+        Task<IEnumerable<Users>> GetAsync(List<SqlQueryCondition> sqlQueryConditionList);
+        Task<SqlPagedResult<Users>> GetAsync(SqlPagedQuery<Users> sqlPagedQuery);
+        Task<Users> GetAsync(Guid id);
+        Task<Users> GetAsync(string login);
+        
+        Task CreateAsync(Users user);
+        Task UpdateAsync(Users user);
+        Task DeleteAsync(Guid id);
+
+        Task SetPasswordAsync(Guid id, string passwordHash);
     }
 }

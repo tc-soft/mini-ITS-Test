@@ -16,8 +16,7 @@ namespace mini_ITS.Core.Repository
         {
             _connectionString = sqlConnectionString.ConnectionString;
         }
-
-        public async Task<IEnumerable<Users>> GetAllAsync()
+        public async Task<IEnumerable<Users>> GetAsync()
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
@@ -27,7 +26,48 @@ namespace mini_ITS.Core.Repository
                 return users;
             }
         }
-        public async Task<SqlPagedResult<Users>> GetAllAsync(SqlPagedQuery<Users> sqlPagedQuery)
+        public async Task<IEnumerable<Users>> GetAsync(string role, string department)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
+                    .WithFilter(
+                        new List<SqlQueryCondition>()
+                        {
+                            new SqlQueryCondition
+                            {
+                                Name = "Role",
+                                Operator = SqlQueryOperator.Equal,
+                                Value = new string(role)
+
+                            },
+                            new SqlQueryCondition
+                            {
+                                Name = "Department",
+                                Operator = SqlQueryOperator.Equal,
+                                Value = new string(department)                            
+                            }
+                        }
+                    )
+                    .WithSort(nameof(Users.Login), "ASC");
+                var users = await sqlConnection.QueryAsync<Users>(sqlQueryBuilder.GetSelectQuery());
+                return users;
+            }
+        }
+        public async Task<IEnumerable<Users>> GetAsync(List<SqlQueryCondition> sqlQueryConditionList)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
+                    .WithFilter(
+                        sqlQueryConditionList
+                    )
+                    .WithSort(nameof(Users.Login), "ASC");
+                var users = await sqlConnection.QueryAsync<Users>(sqlQueryBuilder.GetSelectQuery());
+                return users;
+            }
+        }
+        public async Task<SqlPagedResult<Users>> GetAsync(SqlPagedQuery<Users> sqlPagedQuery)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
@@ -37,116 +77,78 @@ namespace mini_ITS.Core.Repository
                 return SqlPagedResult<Users>.Create(users, sqlPagedQuery, count);
             }
         }
-        public async Task<Users> GetUserAsync(Guid id)
+        public async Task<Users> GetAsync(Guid id)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
                 var sqlQueryBuilder = new SqlQueryBuilder<Users>()
                     .WithFilter(
-                        new SqlQueryCondition
+                        new List<SqlQueryCondition>()
                         {
-                            Name = "Id",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(id.ToString())
+                            new SqlQueryCondition
+                            {
+                                Name = "Id",
+                                Operator = SqlQueryOperator.Equal,
+                                Value = new string(id.ToString())
+                            }
                         }
                     );
                 var user = await sqlConnection.QueryFirstOrDefaultAsync<Users>(sqlQueryBuilder.GetSelectQuery());
                 return user;
             }
         }
-        public async Task<Users> GetUserAsync(string login)
+        public async Task<Users> GetAsync(string login)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
                 var sqlQueryBuilder = new SqlQueryBuilder<Users>()
                     .WithFilter(
-                        new SqlQueryCondition
+                        new List<SqlQueryCondition>()
                         {
-                            Name = "Login",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(login)
+                            new SqlQueryCondition
+                            {
+                                Name = "Login",
+                                Operator = SqlQueryOperator.Equal,
+                                Value = new string(login)
+                            }
                         }
                     );
                 var user = await sqlConnection.QueryFirstOrDefaultAsync<Users>(sqlQueryBuilder.GetSelectQuery());
                 return user;
             }
         }
-        public async Task<string> GetUserFullNameAsync(Guid id)
+
+        public async Task CreateAsync(Users user)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
-                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
-                    .WithFilter(
-                        new SqlQueryCondition
-                        {
-                            Name = "Id",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(id.ToString())
-                        }
-                    );
-                var user = await sqlConnection.QueryFirstOrDefaultAsync<Users>(sqlQueryBuilder.GetSelectQuery());
-                return $"{user.FirstName} {user.LastName}";
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>().GetInsertQuery();
+                await sqlConnection.ExecuteAsync(sqlQueryBuilder, user);
             }
         }
-        public async Task<string> GetUserDepartmentNameAsync(string login)
+        public async Task UpdateAsync(Users user)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
-                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
-                    .WithFilter(
-                        new SqlQueryCondition
-                        {
-                            Name = "Login",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(login)
-                        }
-                    );
-                var user = await sqlConnection.QueryFirstOrDefaultAsync<Users>(sqlQueryBuilder.GetSelectQuery());
-                return user.Department;
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>().GetUpdateQuery();
+                await sqlConnection.ExecuteAsync(sqlQueryBuilder, user);
             }
         }
-        public async Task<IEnumerable<string>> GetUsersAsync(string role)
+        public async Task DeleteAsync(Guid id)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
-                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
-                    .WithFilter(
-                        new SqlQueryCondition
-                        {
-                            Name = "Role",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(role)
-                        }
-                    )
-                    .WithSort(nameof(Users.Login), "ASC");
-                var users = await sqlConnection.QueryAsync<string>(sqlQueryBuilder.GetSelectQuery());
-                return users;
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>().GetDeleteQuery();
+                await sqlConnection.ExecuteAsync(sqlQueryBuilder, new { Id = id });
             }
         }
-        public async Task<IEnumerable<string>> GetUsersAsync(string role, string department)
+
+        public async Task SetPasswordAsync(Guid id, string passwordHash)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
-                var sqlQueryBuilder = new SqlQueryBuilder<Users>()
-                    .WithFilter(
-                        new SqlQueryCondition
-                        {
-                            Name = "Role",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(role)
-                        }
-                    )
-                    .WithFilter(
-                        new SqlQueryCondition
-                        {
-                            Name = "Department",
-                            Operator = SqlQueryOperator.Equal,
-                            Value = new string(department)
-                        }
-                    )
-                    .WithSort(nameof(Users.Login), "ASC");
-                var users = await sqlConnection.QueryAsync<string>(sqlQueryBuilder.GetSelectQuery());
-                return users;
+                var sqlQueryBuilder = new SqlQueryBuilder<Users>().GetUpdateItemQuery("PasswordHash");
+                await sqlConnection.ExecuteAsync(sqlQueryBuilder, new { PasswordHash = passwordHash, Guid = id });
             }
         }
     }
