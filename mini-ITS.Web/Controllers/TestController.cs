@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using mini_ITS.Core;
+using mini_ITS.Core.Services;
 using mini_ITS.Core.Repository;
 using mini_ITS.Core.Models;
 using mini_ITS.Core.Database;
@@ -14,10 +13,12 @@ namespace mini_ITS.Web.Controllers
     public class TestController : Controller
     {
         private readonly IUsersRepository _usersRepository;
+        private readonly IUsersService _usersService;
 
-        public TestController(IUsersRepository usersRepository)
+        public TestController(IUsersRepository usersRepository, IUsersService usersService)
         {
             _usersRepository = usersRepository;
+            _usersService = usersService;
         }
 
         public async Task<IActionResult> IndexAsync()
@@ -26,25 +27,25 @@ namespace mini_ITS.Web.Controllers
             {
                 new SqlQueryCondition
                 {
-                    Name = "Login",
-                    Operator = SqlQueryOperator.LIKE,
-                    Value = new string("%cisz%")
+                    Name = "Role",
+                    Operator = SqlQueryOperator.Equal,
+                    Value = new string("")
                 },
                 new SqlQueryCondition
                 {
-                    Name = "Login",
+                    Name = "Department",
                     Operator = SqlQueryOperator.Equal,
-                    Value = new string("ciszetad")
+                    Value = new string("Managers")
                 }
             };
 
-            var result = await _usersRepository.GetAsync(new SqlPagedQuery<Users>
+            var result = await _usersService.GetAsync(new SqlPagedQuery<Users>
             {
                 //Filter = myFilter,
                 SortColumnName = "Login",
                 SortDirection = "ASC",
                 Page = 1,
-                Results = 20
+                Results = 15
             });
 
             Guid guid = new Guid("e5daa03f-8dfa-4d1a-87b1-22d971f9654c");
@@ -54,16 +55,17 @@ namespace mini_ITS.Web.Controllers
                 Id = guid,
                 Login = "ciszetad",
                 FirstName = "Tadeuszo",
-                LastName = "Ciszewskio",
+                LastName = "Ciszewskim",
                 Department = "IT",
                 Email = "office@tc-soft.pl",
                 Phone = "502600121",
                 Role = "Kierownik",
-                PasswordHash = "dstgxstgv"
+                PasswordHash = "dstgxstgvpir"
             };
 
-            //await _userRepository.CreateUserAsync(user);
-            //var result = await _userRepository.GetUserAsync(guid);
+            //await _usersService.SetPasswordAsync("ciszetad", "portki200$");
+            //await _usersRepository.DeleteAsync(guid);
+            //var result = await _usersService.GetAsync();
 
             return Ok(result);
         }

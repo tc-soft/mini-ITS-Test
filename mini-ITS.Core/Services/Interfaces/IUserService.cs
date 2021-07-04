@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using mini_ITS.Core.Database;
 using mini_ITS.Core.Dto;
@@ -10,17 +9,19 @@ namespace mini_ITS.Core.Services
 {
     public interface IUsersService
     {
-        Task<IEnumerable<UserDto>> GetAsync();
-        Task<SqlPagedResult<UserDto>> GetAsync(SqlPagedQuery<Users> query);
-        Task<IEnumerable<UserDto>> GetAsync(string role, string department);
-        Task<IEnumerable<UserList>> GetAllFullNameAsync(string role);
-        Task<string> GetFullNameAsync(Guid id);
-        Task<UserDto> GetAsync(Guid id);
-        Task<UserDto> GetAsync(string username);
-        Task<string> GetDepartmentNameAsync(string username);
+        Task<IEnumerable<UsersDto>> GetAsync();
+        Task<IEnumerable<UsersDto>> GetAsync(string role, string department);
+        Task<IEnumerable<UsersDto>> GetAsync(List<SqlQueryCondition> sqlQueryConditionList);
+        Task<SqlPagedResult<UsersDto>> GetAsync(SqlPagedQuery<Users> query);
+        Task<UsersDto> GetAsync(Guid id);
+        Task<UsersDto> GetAsync(string username);
 
-        Task CreateAsync(UserDto user);
-        Task UpdateAsync(UserDto user);
+        Task<string> GetFullNameAsync(Guid id);
+        Task<string> GetDepartmentNameAsync(string username);
+        Task<IEnumerable<UserListDto>> GetAllFullNameAsync(string role);
+
+        Task CreateAsync(UsersDto user);
+        Task UpdateAsync(UsersDto user);
         Task DeleteAsync(Guid id);
 
         Task<bool> LoginAsync(string username, string password);

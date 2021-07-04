@@ -1,45 +1,46 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using AutoMapper;
+using mini_ITS.Core.Database;
+using mini_ITS.Core.Dto;
 using mini_ITS.Core.Repository;
 using mini_ITS.Core.Models;
-using mini_ITS.Core.Dto;
-using System;
-using System.Linq;
-using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using mini_ITS.Core.Database;
 
 namespace mini_ITS.Core.Services
 {
-    public class UserService : IUsersService
+    public class UsersService : IUsersService
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IMapper _mapper;
         private readonly IPasswordHasher<Users> _hasher;
-        private readonly IAuthorizationService _authorizationService;
 
-        public UserService(IUsersRepository usersRepository, IMapper mapper, IPasswordHasher<Users> hasher, IAuthorizationService authorizationService)
+        public UsersService(IUsersRepository usersRepository, IMapper mapper, IPasswordHasher<Users> hasher)
         {
             _usersRepository = usersRepository;
             _mapper = mapper;
             _hasher = hasher;
-            _authorizationService = authorizationService;
         }
 
-        public async Task<IEnumerable<UserDto>> GetAsync()
+        public async Task<IEnumerable<UsersDto>> GetAsync()
         {
             var users = await _usersRepository.GetAsync();
-            return users?.Select(y => _mapper.Map<UserDto>(y));
+            return users?.Select(x => _mapper.Map<UsersDto>(x));
         }
-        public async Task<SqlPagedResult<UserDto>> GetAsync(SqlPagedQuery<Users> query)
+        public async Task<IEnumerable<UsersDto>> GetAsync(List<SqlQueryCondition> sqlQueryConditionList)
+        {
+            var users = await _usersRepository.GetAsync(sqlQueryConditionList);
+            return users?.Select(x => _mapper.Map<UsersDto>(x));
+        }
+        public async Task<SqlPagedResult<UsersDto>> GetAsync(SqlPagedQuery<Users> query)
         {
             var result = await _usersRepository.GetAsync(query);
-            var users = result.Results.Select(x => _mapper.Map<UserDto>(x));
-            return users == null ? null : SqlPagedResult<UserDto>.From(result, users);
+            var users = result.Results.Select(x => _mapper.Map<UsersDto>(x));
+            return users == null ? null : SqlPagedResult<UsersDto>.From(result, users);
         }  
-        public async Task<IEnumerable<UserDto>> GetAsync(string role, string department)
+        public async Task<IEnumerable<UsersDto>> GetAsync(string role, string department)
         {
             var filter = new List<SqlQueryCondition>()
             {
@@ -58,11 +59,11 @@ namespace mini_ITS.Core.Services
             };
 
             var users = await _usersRepository.GetAsync(filter);
-            return users?.Select(y => _mapper.Map<UserDto>(y));
+            return users?.Select(x => _mapper.Map<UsersDto>(x));
         }
-        public async Task<IEnumerable<UserList>> GetAllFullNameAsync(string role)
+        public async Task<IEnumerable<UserListDto>> GetAllFullNameAsync(string role)
         {
-            var userList = new List<UserList>();
+            var userList = new List<UserListDto>();
 
             var filter = new List<SqlQueryCondition>()
             {
@@ -80,7 +81,7 @@ namespace mini_ITS.Core.Services
             {
                 if(item.Login != "admin")
                 {
-                    userList.Add(new UserList(item.Id, $"{item.FirstName} {item.LastName}"));
+                    userList.Add(new UserListDto(item.Id, $"{item.FirstName} {item.LastName}"));
                 }
             }
 
@@ -91,15 +92,15 @@ namespace mini_ITS.Core.Services
             var user = await _usersRepository.GetAsync(id);
             return user == null ? null : $"{user.FirstName} {user.LastName}";
         }
-        public async Task<UserDto> GetAsync(Guid id)
+        public async Task<UsersDto> GetAsync(Guid id)
         {
             var user = await _usersRepository.GetAsync(id);
-            return user == null ? null : _mapper.Map<UserDto>(user);
+            return user == null ? null : _mapper.Map<UsersDto>(user);
         }
-        public async Task<UserDto> GetAsync(string username)
+        public async Task<UsersDto> GetAsync(string username)
         {
             var user = await _usersRepository.GetAsync(username);
-            return user == null ? null : _mapper.Map<UserDto>(user);
+            return user == null ? null : _mapper.Map<UsersDto>(user);
         }
         public async Task<string> GetDepartmentNameAsync(string username)
         {
@@ -107,8 +108,7 @@ namespace mini_ITS.Core.Services
             return user?.Department;
         }
 
-
-        public async Task CreateAsync(UserDto user)
+        public async Task CreateAsync(UsersDto user)
         {
             var existingUser = await _usersRepository.GetAsync(user.Login);
             if (existingUser != null)
@@ -117,10 +117,10 @@ namespace mini_ITS.Core.Services
             }
 
             var newUser = new Users(Guid.NewGuid(), user.Login, user.FirstName, user.LastName, user.Department, user.Email, user.Phone, user.Role, "");
-            newUser.PasswordHash = _hasher.HashPassword(newUser, user.Password);
+            newUser.PasswordHash = _hasher.HashPassword(newUser, user.PasswordHash);
             await _usersRepository.CreateAsync(newUser);
         }
-        public async Task UpdateAsync(UserDto user)
+        public async Task UpdateAsync(UsersDto user)
         {
             var updateUser = await _usersRepository.GetAsync(user.Id);
             var tempUser = await _usersRepository.GetAsync(user.Login);

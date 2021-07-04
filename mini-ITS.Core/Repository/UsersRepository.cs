@@ -34,6 +34,7 @@ namespace mini_ITS.Core.Repository
                     .WithFilter(
                         new List<SqlQueryCondition>()
                         {
+                            role == null ? null : 
                             new SqlQueryCondition
                             {
                                 Name = "Role",
@@ -41,6 +42,7 @@ namespace mini_ITS.Core.Repository
                                 Value = new string(role)
 
                             },
+                            department == null ? null :
                             new SqlQueryCondition
                             {
                                 Name = "Department",
@@ -148,7 +150,7 @@ namespace mini_ITS.Core.Repository
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
                 var sqlQueryBuilder = new SqlQueryBuilder<Users>().GetUpdateItemQuery("PasswordHash");
-                await sqlConnection.ExecuteAsync(sqlQueryBuilder, new { PasswordHash = passwordHash, Guid = id });
+                await sqlConnection.ExecuteAsync(sqlQueryBuilder, new { PasswordHash = passwordHash, Id = id });
             }
         }
     }
