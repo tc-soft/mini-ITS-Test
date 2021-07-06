@@ -1,11 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using mini_ITS.Core.Database;
+using mini_ITS.Core.Models;
 using mini_ITS.Core.Options;
+using mini_ITS.Core.Repository;
+using mini_ITS.Core.Services;
+using mini_ITS.Web.Mapper;
 
 namespace mini_ITS.Web
 {
@@ -22,6 +28,16 @@ namespace mini_ITS.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<DatabaseOptions>(Configuration.GetSection("DatabaseOptions"));
+
+            services.AddSingleton<ISqlConnectionString, SqlConnectionString>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IUsersService, UsersService>();
+
+            //potrzebne do Service
+            services.AddSingleton(AutoMapperConfig.GetMapper());
+            //potrzebne do Service
+            services.AddSingleton<IPasswordHasher<Users>, PasswordHasher<Users>>();
+
 
             services.AddControllersWithViews();
 

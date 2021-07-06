@@ -173,11 +173,14 @@ namespace mini_ITS.Core.Database
 
             return this;
         }
-        public SqlQueryBuilder<T> WithFilter(SqlQueryCondition sqlQueryCondition)
+        public SqlQueryBuilder<T> WithFilter(List<SqlQueryCondition> sqlQueryConditionList)
         {
-            if (sqlQueryCondition is not null)
+            foreach (var sqlQueryCondition in sqlQueryConditionList)
             {
-                _filters.Add(sqlQueryCondition);
+                if (sqlQueryCondition is not null)
+                {
+                    _filters.Add(sqlQueryCondition);
+                }
             }
 
             return this;
