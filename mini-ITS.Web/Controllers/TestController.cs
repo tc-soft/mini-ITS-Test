@@ -29,23 +29,27 @@ namespace mini_ITS.Web.Controllers
                 {
                     Name = "Role",
                     Operator = SqlQueryOperator.Equal,
-                    Value = new string("")
+                    Value = null
+                    //Value = new string("")
                 },
                 new SqlQueryCondition
                 {
                     Name = "Department",
                     Operator = SqlQueryOperator.Equal,
-                    Value = new string("Managers")
+                    Value = null
+                    //Value = new string("Managers")
                 }
             };
 
-            var result = await _usersService.GetAsync(new SqlPagedQuery<Users>
+            //var result = await _usersRepository.GetAsync(myFilter);
+
+            var result = await _usersRepository.GetAsync(new SqlPagedQuery<Users>
             {
-                //Filter = myFilter,
+                Filter = myFilter,
                 SortColumnName = "Login",
                 SortDirection = "ASC",
                 Page = 1,
-                Results = 55
+                Results = 10
             });
 
             Guid guid = new Guid("e5daa03f-8dfa-4d1a-87b1-22d971f9654c");

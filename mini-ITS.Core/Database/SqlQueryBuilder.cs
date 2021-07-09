@@ -23,6 +23,7 @@ namespace mini_ITS.Core.Database
             Type type = typeof(T);
             _tableName = type.Name ?? throw new ArgumentNullException(type.Name);
             _ = sqlPagedQuery.Filter is not null ? _filters = sqlPagedQuery.Filter : null;
+            _filters.RemoveAll(item => item.Value is null);
 
             WithSort(sqlPagedQuery.SortColumnName, sqlPagedQuery.SortDirection);
             WithPaging(sqlPagedQuery.Offset, sqlPagedQuery.Results);
@@ -177,7 +178,7 @@ namespace mini_ITS.Core.Database
         {
             foreach (var sqlQueryCondition in sqlQueryConditionList)
             {
-                if (sqlQueryCondition is not null)
+                if (sqlQueryCondition is not null && sqlQueryCondition.Value is not null)
                 {
                     _filters.Add(sqlQueryCondition);
                 }
