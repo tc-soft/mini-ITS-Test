@@ -206,9 +206,9 @@ namespace mini_ITS.Core.Tests.Repository
                 sqlPagedQuery.Page = i;
                 var users = await _usersRepository.GetAsync(sqlPagedQuery);
                 Assert.That(users.Results.Count() > 0, "ERROR - users is empty");
-                //Assert.That(users, Is.TypeOf<SqlPagedResult<Users>>(), "ERROR return type. Must be : SqlPagedResult<Users>");
-                //Assert.That(users, Is.All.InstanceOf<Users>(), "ERROR - return Instance must be <Models.Users>");
-                //Assert.That(users, Is.Unique);
+                Assert.That(users, Is.TypeOf<SqlPagedResult<Users>>(), "ERROR - return type");
+                Assert.That(users.Results, Is.All.InstanceOf<Users>(), "ERROR - return all instance type of users.Results");
+                Assert.That(users.Results, Is.Unique);
                 
                 TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - Results={users.ResultsPerPage}, Ammount={users.TotalResults}");
 
