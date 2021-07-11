@@ -19,7 +19,7 @@ namespace mini_ITS.Core.Database
 
         public static SqlPagedResult<T> Create(IEnumerable<T> results, 
             SqlPagedQueryBase query, int totalResults)
-            => Create(results, query.Page, query.Results, totalResults);
+            => Create(results, query.Page, query.ResultsPerPage, totalResults);
 
         public static SqlPagedResult<T> Create(IEnumerable<T> results, 
             int currentPage, int resultsPerPage, int totalResults)

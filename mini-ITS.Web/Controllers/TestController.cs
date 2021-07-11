@@ -49,7 +49,7 @@ namespace mini_ITS.Web.Controllers
                 SortColumnName = "Login",
                 SortDirection = "ASC",
                 Page = 1,
-                Results = 10
+                ResultsPerPage = 10
             });
 
             Guid guid = new Guid("e5daa03f-8dfa-4d1a-87b1-22d971f9654c");

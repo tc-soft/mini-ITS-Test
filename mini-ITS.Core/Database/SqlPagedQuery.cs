@@ -12,7 +12,7 @@ namespace mini_ITS.Core.Database
         {
             get
             {
-                return (Page - 1) * Results;
+                return (Page - 1) * ResultsPerPage;
             }
         }
     }

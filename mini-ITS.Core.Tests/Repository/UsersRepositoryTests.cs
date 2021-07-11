@@ -169,52 +169,70 @@ namespace mini_ITS.Core.Tests.Repository
             }
         }
 
-        [TestCase(null, "Sales", 5)]
-        [TestCase("User", "Development", 2)]
-        [TestCase(null, null, 10)]
-        public async Task GetAsync_SqlPagedQuery(string role, string department, int results)
+        [TestCase("Sales", null, 5, "Login", "DESC")]
+        [TestCase("Development", "User",2, "FirstName", "ASC")]
+        [TestCase(null, null, 10, "Email", "ASC")]
+        public async Task GetAsync_SqlPagedQuery(
+            string department,
+            string role,
+            int resultsPerPage,
+            string sortColumnName,
+            string sortDirection)
         {
             var sqlQueryConditionList = new List<SqlQueryCondition>()
             {
                 new SqlQueryCondition
                 {
-                    Name = "Role",
-                    Operator = SqlQueryOperator.Equal,
-                    Value = role
-                },
-                new SqlQueryCondition
-                {
                     Name = "Department",
                     Operator = SqlQueryOperator.Equal,
                     Value = department
+                },
+                new SqlQueryCondition
+                {
+                    Name = "Role",
+                    Operator = SqlQueryOperator.Equal,
+                    Value = role
                 }
             };
 
             var sqlPagedQuery = new SqlPagedQuery<Users>
             {
                 Filter = sqlQueryConditionList,
-                SortColumnName = "Login",
-                SortDirection = "ASC",
+                SortColumnName = sortColumnName,
+                SortDirection = sortDirection,
                 Page = 1,
-                Results = results
+                ResultsPerPage = resultsPerPage
             };
 
             var usersList = await _usersRepository.GetAsync(sqlPagedQuery);
-
+            
             for (int i = 1; i <= usersList.TotalPages; i++)
             {
                 sqlPagedQuery.Page = i;
                 var users = await _usersRepository.GetAsync(sqlPagedQuery);
+                TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - ResultsPerPage={users.ResultsPerPage}, TotalResults={users.TotalResults} (Login, FirstName, Department, Email, Role)");
+
                 Assert.That(users.Results.Count() > 0, "ERROR - users is empty");
                 Assert.That(users, Is.TypeOf<SqlPagedResult<Users>>(), "ERROR - return type");
-                Assert.That(users.Results, Is.All.InstanceOf<Users>(), "ERROR - return all instance type of users.Results");
+                Assert.That(users.Results, Is.All.InstanceOf<Users>(), "ERROR - All.InstanceOf<Users>()");
                 Assert.That(users.Results, Is.Unique);
-                
-                TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - Results={users.ResultsPerPage}, Ammount={users.TotalResults}");
+
+                switch (sqlPagedQuery.SortDirection)
+                {
+                    case "ASC":
+                        Assert.That(users.Results, Is.Ordered.Ascending.By(sqlPagedQuery.SortColumnName), "ERROR - sort");
+                        break;
+                    case "DESC":
+                        Assert.That(users.Results, Is.Ordered.Descending.By(sqlPagedQuery.SortColumnName), "ERROR - sort");
+                        break;
+                    default:
+                        Assert.Fail("ERROR - SortDirection is not T-SQL");
+                        break;
+                };
 
                 foreach (var item in users.Results)
                 {
-                    TestContext.Out.WriteLine($"User: {item.Login} - Role={(role is null ? "*" : role)}, Department={(department is null ? "*" : department)}");
+                    TestContext.Out.WriteLine($"{item.Login}\t{item.FirstName}\t{(department is null ? "*" : department)}\t{item.Email}\t{(role is null ? "*" : role)}");
 
                     if (role is not null) Assert.That(item.Role, Is.EqualTo(role), "ERROR - Role is not equal");
                     if (department is not null) Assert.That(item.Department, Is.EqualTo(department), "ERROR - Department is not equal");

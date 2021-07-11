@@ -26,7 +26,7 @@ namespace mini_ITS.Core.Database
             _filters.RemoveAll(item => item.Value is null);
 
             WithSort(sqlPagedQuery.SortColumnName, sqlPagedQuery.SortDirection);
-            WithPaging(sqlPagedQuery.Offset, sqlPagedQuery.Results);
+            WithPaging(sqlPagedQuery.Offset, sqlPagedQuery.ResultsPerPage);
         }
 
         public string GetSelectQuery()
