@@ -76,36 +76,6 @@ namespace mini_ITS.Core.Tests.Repository
             }
         }
 
-        [TestCase("bartlbri")]
-        [TestCase("atkincol")]
-        [TestCase("kirbyisa")]
-        [TestCase("trevidor")]
-        public async Task GetAsync_CheckLogin(string login)
-        {
-            var users = await _usersRepository.GetAsync(login);
-            TestContext.Out.WriteLine($"Id         : {users.Id}");
-            TestContext.Out.WriteLine($"Login      : {users.Login}");
-            TestContext.Out.WriteLine($"FirstName  : {users.FirstName}");
-            TestContext.Out.WriteLine($"LastName   : {users.LastName}");
-            TestContext.Out.WriteLine($"Department : {users.Department}");
-            TestContext.Out.WriteLine($"Phone      : {users.Email}");
-            TestContext.Out.WriteLine($"Phone      : {users.Phone}");
-            TestContext.Out.WriteLine($"Phone      : {users.Role}");
-            TestContext.Out.WriteLine($"Phone      : {users.PasswordHash}");
-
-            Assert.IsTrue(users.Login == login);
-        }
-
-        [TestCase("5ee56913-7441-4305-8b31-bc86584fff47")]
-        [TestCase("3131c3ea-5607-4fa0-b9d7-712ff41baa4e")]
-        [TestCase("dfe4d2bf-08ea-4d86-9ccd-4e1ce3459c48")]
-        [TestCase("99fcf2cf-9080-4c61-bd3d-66f78ce4e39f")]
-        public async Task GetAsync_CheckId(Guid id)
-        {
-            var users = await _usersRepository.GetAsync(id);
-            Assert.IsTrue(users.Id == id, "Jest konto : {id}");
-        }
-
         [Test, Combinatorial]
         public async Task GetAsync_CheckRoleDepartment(
             [Values(null, "User", "Manager")] string role,
@@ -210,7 +180,8 @@ namespace mini_ITS.Core.Tests.Repository
             {
                 sqlPagedQuery.Page = i;
                 var users = await _usersRepository.GetAsync(sqlPagedQuery);
-                TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - ResultsPerPage={users.ResultsPerPage}, TotalResults={users.TotalResults} (Login, FirstName, Department, Email, Role)");
+                TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - ResultsPerPage={users.ResultsPerPage}, TotalResults={users.TotalResults}");
+                TestContext.Out.WriteLine($"{("Login").PadRight(10)}{("FirstName").PadRight(20)}{("Department").PadRight(20)}{("Email").PadRight(40)}{("Role").PadRight(20)}");
 
                 Assert.That(users.Results.Count() > 0, "ERROR - users is empty");
                 Assert.That(users, Is.TypeOf<SqlPagedResult<Users>>(), "ERROR - return type");
@@ -232,7 +203,7 @@ namespace mini_ITS.Core.Tests.Repository
 
                 foreach (var item in users.Results)
                 {
-                    TestContext.Out.WriteLine($"{item.Login}\t{item.FirstName}\t{(department is null ? "*" : department)}\t{item.Email}\t{(role is null ? "*" : role)}");
+                    TestContext.Out.WriteLine($"{item.Login.PadRight(10)}{item.FirstName.PadRight(20)}{(department is null ? "*".PadRight(20) : department.PadRight(20))}{item.Email.PadRight(40)}{(role is null ? "*".PadRight(20) : role.PadRight(20))}");
 
                     if (role is not null) Assert.That(item.Role, Is.EqualTo(role), "ERROR - Role is not equal");
                     if (department is not null) Assert.That(item.Department, Is.EqualTo(department), "ERROR - Department is not equal");
@@ -247,6 +218,62 @@ namespace mini_ITS.Core.Tests.Repository
                     Assert.IsNotNull(item.PasswordHash, $"ERROR - {nameof(item.PasswordHash)} is null");
                 }
             }
+        }
+
+        [TestCaseSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.UsersCases))]
+        public async Task GetAsync_CheckId(Users users)
+        {
+            var user = await _usersRepository.GetAsync(users.Id);
+
+            TestContext.Out.WriteLine($"Id         : {user.Id}");
+            TestContext.Out.WriteLine($"Login      : {user.Login}");
+            TestContext.Out.WriteLine($"FirstName  : {user.FirstName}");
+            TestContext.Out.WriteLine($"LastName   : {user.LastName}");
+            TestContext.Out.WriteLine($"Department : {user.Department}");
+            TestContext.Out.WriteLine($"Phone      : {user.Email}");
+            TestContext.Out.WriteLine($"Phone      : {user.Phone}");
+            TestContext.Out.WriteLine($"Phone      : {user.Role}");
+            TestContext.Out.WriteLine($"Phone      : {user.PasswordHash}");
+
+            Assert.That(user, Is.TypeOf<Users>(), "ERROR - return type");
+
+            Assert.That(user.Id, Is.EqualTo(users.Id), "ERROR - Id is not equal");
+            Assert.That(user.Login, Is.EqualTo(users.Login), "ERROR - Login is not equal");
+            Assert.That(user.FirstName, Is.EqualTo(users.FirstName), "ERROR - FirstName is not equal");
+            Assert.That(user.LastName, Is.EqualTo(users.LastName), "ERROR - LastName is not equal");
+            Assert.That(user.Department, Is.EqualTo(users.Department), "ERROR - Department is not equal");
+            Assert.That(user.Email, Is.EqualTo(users.Email), "ERROR - Email is not equal");
+            Assert.That(user.Phone, Is.EqualTo(users.Phone), "ERROR - Phone is not equal");
+            Assert.That(user.Role, Is.EqualTo(users.Role), "ERROR - Role is not equal");
+            Assert.That(user.PasswordHash, Is.EqualTo(users.PasswordHash), "ERROR - PasswordHash is not equal");
+        }
+
+        [TestCaseSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.UsersCases))]
+        public async Task GetAsync_CheckLogin(Users users)
+        {
+            var user = await _usersRepository.GetAsync(users.Login);
+
+            TestContext.Out.WriteLine($"Id         : {user.Id}");
+            TestContext.Out.WriteLine($"Login      : {user.Login}");
+            TestContext.Out.WriteLine($"FirstName  : {user.FirstName}");
+            TestContext.Out.WriteLine($"LastName   : {user.LastName}");
+            TestContext.Out.WriteLine($"Department : {user.Department}");
+            TestContext.Out.WriteLine($"Phone      : {user.Email}");
+            TestContext.Out.WriteLine($"Phone      : {user.Phone}");
+            TestContext.Out.WriteLine($"Phone      : {user.Role}");
+            TestContext.Out.WriteLine($"Phone      : {user.PasswordHash}");
+
+            Assert.That(user, Is.TypeOf<Users>(), "ERROR - return type");
+
+            Assert.That(user.Id, Is.EqualTo(users.Id), "ERROR - Id is not equal");
+            Assert.That(user.Login, Is.EqualTo(users.Login), "ERROR - Login is not equal");
+            Assert.That(user.FirstName, Is.EqualTo(users.FirstName), "ERROR - FirstName is not equal");
+            Assert.That(user.LastName, Is.EqualTo(users.LastName), "ERROR - LastName is not equal");
+            Assert.That(user.Department, Is.EqualTo(users.Department), "ERROR - Department is not equal");
+            Assert.That(user.Email, Is.EqualTo(users.Email), "ERROR - Email is not equal");
+            Assert.That(user.Phone, Is.EqualTo(users.Phone), "ERROR - Phone is not equal");
+            Assert.That(user.Role, Is.EqualTo(users.Role), "ERROR - Role is not equal");
+            Assert.That(user.PasswordHash, Is.EqualTo(users.PasswordHash), "ERROR - PasswordHash is not equal");
         }
     }
 }
