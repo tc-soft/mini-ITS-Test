@@ -75,8 +75,8 @@ namespace mini_ITS.Core.Tests.Repository
 
         [Test, Combinatorial]
         public async Task GetAsync_CheckDepartmentRole(
-            [Values(null, "Sales", "Research")] string department,
-            [Values(null, "User", "Manager")] string role)
+            [ValueSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.testDepartment))] string department,
+            [ValueSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.testRole))] string role)
         {
             var users = await _usersRepository.GetAsync(department, role);
             TestContext.Out.WriteLine($"Row's : {users.Count()}");
@@ -98,8 +98,8 @@ namespace mini_ITS.Core.Tests.Repository
 
         [Test, Combinatorial]
         public async Task GetAsync_CheckSqlQueryCondition(
-            [Values(null, "Sales", "Research")] string department,
-            [Values(null, "User", "Manager")] string role)
+            [ValueSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.testDepartment))] string department,
+            [ValueSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.testRole))] string role)
         {
             var sqlQueryConditionList = new List<SqlQueryCondition>()
             {
@@ -121,7 +121,6 @@ namespace mini_ITS.Core.Tests.Repository
             TestContext.Out.WriteLine($"Row's : {users.Count()}");
 
             Assert.That(users.Count() > 0, "ERROR - users is empty");
-
             Assert.That(users, Is.TypeOf<List<Users>>(), "ERROR return type. Must be : List<Users>");
             Assert.That(users, Is.All.InstanceOf<Users>(), "ERROR - return Instance must be <Users>");
             Assert.That(users, Is.Unique);
@@ -144,7 +143,7 @@ namespace mini_ITS.Core.Tests.Repository
         }
 
         [TestCaseSource(typeof(UsersRepositoryTestsData), nameof(UsersRepositoryTestsData.SqlPagedQueryCases))]
-        public async Task GetAsync_SqlPagedQuery(SqlPagedQuery<Users> sqlPagedQuery)
+        public async Task GetAsync_CheckSqlPagedQuery(SqlPagedQuery<Users> sqlPagedQuery)
         {
             var usersList = await _usersRepository.GetAsync(sqlPagedQuery);
             
@@ -153,8 +152,24 @@ namespace mini_ITS.Core.Tests.Repository
                 sqlPagedQuery.Page = i;
                 var users = await _usersRepository.GetAsync(sqlPagedQuery);
 
-                TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - ResultsPerPage={users.ResultsPerPage}, TotalResults={users.TotalResults}");
-                TestContext.Out.WriteLine($"{("Login").PadRight(10)}{("FirstName").PadRight(20)}{("Department").PadRight(20)}{("Email").PadRight(40)}{("Role").PadRight(20)}");
+                string filterString = null;
+                sqlPagedQuery.Filter.ForEach(x =>
+                {
+                    if (x == sqlPagedQuery.Filter.First() || x == sqlPagedQuery.Filter.Last())
+                        filterString += $", {x.Name}={x.Value}";
+                    else
+                        filterString += $" {x.Name}={x.Value}";
+                });
+                
+                TestContext.Out.WriteLine($"\nPage {users.CurrentPage}/{usersList.TotalPages} - ResultsPerPage={users.ResultsPerPage}, TotalResults={users.TotalResults}{filterString}");
+
+                TestContext.Out.WriteLine(
+                    $"{"Login".PadRight(10)}" +
+                    $"{"FirstName".PadRight(20)}" +
+                    $"{"Department".PadRight(20)}" +
+                    $"{"Email".PadRight(40)}" +
+                    $"{"Role".PadRight(20)}"
+                );
 
                 Assert.That(users.Results.Count() > 0, "ERROR - users is empty");
                 Assert.That(users, Is.TypeOf<SqlPagedResult<Users>>(), "ERROR - return type");
@@ -176,16 +191,16 @@ namespace mini_ITS.Core.Tests.Repository
 
                 foreach (var item in users.Results)
                 {
-                    foreach (var filter in sqlPagedQuery.Filter)
+                    sqlPagedQuery.Filter.ForEach(x =>
                     {
-                        if (filter.Value is not null)
+                        if (x.Value is not null)
                         {
                             Assert.That(
-                                item.GetType().GetProperty(filter.Name).GetValue(item, null),
-                                Is.EqualTo(filter.Value),
-                                $"ERROR - Filter {filter.Name} is not equal");
+                                item.GetType().GetProperty(x.Name).GetValue(item, null),
+                                Is.EqualTo(x.Value),
+                                $"ERROR - Filter {x.Name} is not equal");
                         }
-                    }
+                    });
 
                     TestContext.Out.WriteLine(
                         $"{item.Login.PadRight(10)}" +
