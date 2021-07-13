@@ -9,7 +9,7 @@ namespace mini_ITS.Core.Repository
     public interface IUsersRepository
     {
         Task<IEnumerable<Users>> GetAsync();
-        Task<IEnumerable<Users>> GetAsync(string role, string department);
+        Task<IEnumerable<Users>> GetAsync(string department, string role);
         Task<IEnumerable<Users>> GetAsync(List<SqlQueryCondition> sqlQueryConditionList);
         Task<SqlPagedResult<Users>> GetAsync(SqlPagedQuery<Users> sqlPagedQuery);
         Task<Users> GetAsync(Guid id);

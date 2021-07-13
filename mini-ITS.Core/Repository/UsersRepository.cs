@@ -26,7 +26,7 @@ namespace mini_ITS.Core.Repository
                 return users;
             }
         }
-        public async Task<IEnumerable<Users>> GetAsync(string role, string department)
+        public async Task<IEnumerable<Users>> GetAsync(string department, string role)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
