@@ -184,5 +184,23 @@ namespace mini_ITS.Core.Tests.Repository
 
             }
         }
+        public static IEnumerable<string> testDepartment
+        {
+            get
+            {
+                yield return null;
+                yield return "Sales";
+                yield return "Research";
+            }
+        }
+        public static IEnumerable<string> testRole
+        {
+            get
+            {
+                yield return null;
+                yield return "User";
+                yield return "Manager";
+            }
+        }
     }
 }
