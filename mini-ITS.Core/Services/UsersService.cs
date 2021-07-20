@@ -39,26 +39,26 @@ namespace mini_ITS.Core.Services
             var result = await _usersRepository.GetAsync(query);
             var users = result.Results.Select(x => _mapper.Map<UsersDto>(x));
             return users == null ? null : SqlPagedResult<UsersDto>.From(result, users);
-        }  
-        public async Task<IEnumerable<UsersDto>> GetAsync(string role, string department)
+        }
+        public async Task<IEnumerable<UsersDto>> GetAsync(string department, string role)
         {
-            var filter = new List<SqlQueryCondition>()
-            {
-                new SqlQueryCondition
-                {
-                    Name = "Role",
-                    Operator = SqlQueryOperator.Equal,
-                    Value = new string(role)
-                },
-                new SqlQueryCondition
-                {
-                    Name = "Department",
-                    Operator = SqlQueryOperator.Equal,
-                    Value = new string(department)
-                }
-            };
+            //var filter = new List<SqlQueryCondition>()
+            //{
+            //    new SqlQueryCondition
+            //    {
+            //        Name = "Role",
+            //        Operator = SqlQueryOperator.Equal,
+            //        Value = new string(role) 
+            //    },
+            //    new SqlQueryCondition
+            //    {
+            //        Name = "Department",
+            //        Operator = SqlQueryOperator.Equal,
+            //        Value = new string(department)
+            //    }
+            //};
 
-            var users = await _usersRepository.GetAsync(filter);
+            var users = await _usersRepository.GetAsync(department, role);
             return users?.Select(x => _mapper.Map<UsersDto>(x));
         }
         public async Task<IEnumerable<UserListDto>> GetAllFullNameAsync(string role)
@@ -79,7 +79,7 @@ namespace mini_ITS.Core.Services
 
             foreach (var item in users)
             {
-                if(item.Login != "admin")
+                if (item.Login != "admin")
                 {
                     userList.Add(new UserListDto(item.Id, $"{item.FirstName} {item.LastName}"));
                 }
@@ -125,9 +125,9 @@ namespace mini_ITS.Core.Services
             var updateUser = await _usersRepository.GetAsync(user.Id);
             var tempUser = await _usersRepository.GetAsync(user.Login);
 
-            if(tempUser != null)
+            if (tempUser != null)
             {
-                if(updateUser.Id == tempUser.Id)
+                if (updateUser.Id == tempUser.Id)
                 {
                     //Nie nastąpiła zmiana Loginu
                     updateUser.Login = user.Login;
@@ -200,7 +200,9 @@ namespace mini_ITS.Core.Services
 
             if (user is not null)
             {
-                await _usersRepository.SetPasswordAsync(user.Id, _hasher.HashPassword(user, password));
+                var pass = _hasher.HashPassword(user, password);
+                await _usersRepository.SetPasswordAsync(user.Id, pass);
+                var log = "t";
             }
             else
             {
