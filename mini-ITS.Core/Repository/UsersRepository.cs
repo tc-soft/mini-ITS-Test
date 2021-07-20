@@ -119,7 +119,6 @@ namespace mini_ITS.Core.Repository
                 return user;
             }
         }
-
         public async Task CreateAsync(Users user)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
@@ -144,7 +143,6 @@ namespace mini_ITS.Core.Repository
                 await sqlConnection.ExecuteAsync(sqlQueryBuilder, new { Id = id });
             }
         }
-
         public async Task SetPasswordAsync(Guid id, string passwordHash)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))

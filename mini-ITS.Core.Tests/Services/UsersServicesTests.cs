@@ -25,9 +25,10 @@ namespace mini_ITS.Core.Tests.Services
         private IOptions<DatabaseOptions> _databaseOptions;
         private ISqlConnectionString _sqlConnectionString;
 
-        //private IMapper _mapper;
-        private readonly IPasswordHasher<Users> _hasher;
-        private UsersService _usersService;
+        private IMapper _mapper;
+        private IPasswordHasher<Users> _hasher;
+        private IUsersRepository _usersRepository;
+        private IUsersService _usersService;
 
         [SetUp]
         public void Init()
@@ -41,18 +42,15 @@ namespace mini_ITS.Core.Tests.Services
 
             _databaseOptions = Microsoft.Extensions.Options.Options.Create(configuration.GetSection("DatabaseOptions").Get<DatabaseOptions>());
             _sqlConnectionString = new SqlConnectionString(_databaseOptions);
-
-            _usersService = new UsersService(
-                new UsersRepository(_sqlConnectionString),
-                new MapperConfiguration(cfg =>
-                {
-                    cfg.CreateMap<UsersDto, Users>();
-                    cfg.CreateMap<Users, UsersDto>();
-                }).CreateMapper(),
-                new Mock<IPasswordHasher<Users>>().Object
-                ); ;
+            _usersRepository = new UsersRepository(_sqlConnectionString);
+            _mapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<UsersDto, Users>();
+                cfg.CreateMap<Users, UsersDto>();
+            }).CreateMapper();
+            _hasher = new PasswordHasher<Users>();
+            _usersService = new UsersService(_usersRepository, _mapper, _hasher);
         }
-
         [Test]
         public async Task GetAsync_CheckAll()
         {
@@ -239,9 +237,11 @@ namespace mini_ITS.Core.Tests.Services
         public async Task SetPasswordAsync()
         {
             var user = _usersService.GetAsync("yaveomic");
-            await _usersService.SetPasswordAsync("yaveomic", "Nowe_hasło123#");
+            await _usersService.SetPasswordAsync("atkincol", "NoweHasłozcaszc123$!@#");
+
+            
+            //var result = _hash.VerifyHashedPassword(userPass, pass);
+            //Assert.That(result, Is.EqualTo(PasswordVerificationResult.Success));
         }
-
-
     }
 }
