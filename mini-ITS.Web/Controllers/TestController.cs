@@ -43,7 +43,7 @@ namespace mini_ITS.Web.Controllers
 
             //var result = await _usersRepository.GetAsync(myFilter);
 
-            var result = await _usersRepository.GetAsync(new SqlPagedQuery<Users>
+            var result = await _usersService.GetAsync(new SqlPagedQuery<Users>
             {
                 Filter = myFilter,
                 SortColumnName = "Login",
