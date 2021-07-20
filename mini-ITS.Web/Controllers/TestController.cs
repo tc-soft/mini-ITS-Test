@@ -67,6 +67,8 @@ namespace mini_ITS.Web.Controllers
                 PasswordHash = "dstgxstgvpir"
             };
 
+            await _usersService.SetPasswordAsync("atkincol", "NoweHgbvufnvuasło123#");
+
             //await _usersService.SetPasswordAsync("ciszetad", "portki200$");
             //await _usersRepository.DeleteAsync(guid);
             //var result = await _usersService.GetAsync();

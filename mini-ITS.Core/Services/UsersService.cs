@@ -200,9 +200,7 @@ namespace mini_ITS.Core.Services
 
             if (user is not null)
             {
-                var pass = _hasher.HashPassword(user, password);
-                await _usersRepository.SetPasswordAsync(user.Id, pass);
-                var log = "t";
+                await _usersRepository.SetPasswordAsync(user.Id, _hasher.HashPassword(user, password));
             }
             else
             {
