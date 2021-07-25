@@ -236,52 +236,23 @@ namespace mini_ITS.Core.Tests.Services
         [Test]
         public async Task SetPasswordAsync()
         {
-            //char[] strTable = !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
             //var user = _usersService.GetAsync("yaveomic");
             //await _usersService.SetPasswordAsync("atkincol", "NoweHasłozcaszc123$!@#");
 
             string strPlain = " !}~ABC - It is test to cipher txt";
-            var offset = 7;
-
             TestContext.Out.WriteLine("Start:" + strPlain + " - txt originalny");
 
-            StringBuilder strEncrypt = new StringBuilder();
-            for (int i = 32; i <= 126; i++)
-            {
-                strEncrypt.Append(Convert.ToChar(i));
-            }
+            //Tablica literek po kolei
+            var strLetters = Enumerable.Range(32, 95)
+                .Select(x => Convert.ToChar(x));
 
-            TestContext.Out.WriteLine("Start:" + strEncrypt + " - Encrypt");
+            TestContext.Out.WriteLine("Start:" + string.Join(null, strLetters) + " - Letters");
 
-            //StringBuilder strDecrypt = new StringBuilder();
-            //foreach (var item in strEncrypt.ToString())
-            //{
-            //    var intChar = (int)item - offset;
-            //    strDecrypt.Append(
-            //            Convert.ToChar(intChar)
-            //        );
-            //}
-            //TestContext.Out.WriteLine("Start:" + strDecrypt + " - Decrypt");
+            Random rnd = new();
+            var strMatrix = strLetters.OrderBy(x => rnd.Next());
+            TestContext.Out.WriteLine("Start:" + string.Join(null, strMatrix) + " - Matrix") ;
 
-            //var strEncrypt2 = strPlain
-            //    .Select(x => (int)x)
-            //    //.Select(x => (x-32 % 94))
-            //    //.Select(x => strEncrypt.Append(x))
-            //    ;
-
-            //TestContext.Out.WriteLine("Start:" + strEncrypt2 + "      - StringBuilder().Select()");
-
-            byte[] bytePlain = Encoding.ASCII.GetBytes(strPlain);
-            var strEncrypt3 = bytePlain
-                .Select(x => (x + offset % 94))
-                .Select(x => (char)x + 32)
-                .ToArray()
-                .ToString()
-                ;
-            //var str = Encoding.Default.GetString(bytePlain);
-
-            TestContext.Out.WriteLine("Start:" + strEncrypt3 + "      - byte[]");
-
+            
             //var result = _hash.VerifyHashedPassword(userPass, pass);
             //Assert.That(result, Is.EqualTo(PasswordVerificationResult.Success));
         }
