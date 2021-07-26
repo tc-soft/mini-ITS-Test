@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+
+import Nav from './_components/Nav';
+import Home from './home/Index';
+//import { Users } from '../users/Index';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const { pathname } = useLocation();
+
+    return (
+        <div className="app-container bg-light">
+            <Nav />
+            <div className="container pt-4 pb-4">
+                <Switch>
+                    <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
+                    <Route exact path="/" component={Home} />
+                    {/*<Route path="/users" component={Users} />*/}
+                    <Redirect from="*" to="/" />
+                </Switch>
+            </div>
+        </div>
+    );
 }
 
 export default App;
