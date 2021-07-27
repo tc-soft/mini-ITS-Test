@@ -10,6 +10,7 @@ using mini_ITS.Core.Database;
 
 namespace mini_ITS.Web.Controllers
 {
+    //[Produces("application/json")]
     public class TestController : Controller
     {
         private readonly IUsersRepository _usersRepository;
@@ -21,6 +22,7 @@ namespace mini_ITS.Web.Controllers
             _usersService = usersService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
             var myFilter = new List<SqlQueryCondition>()
@@ -73,7 +75,7 @@ namespace mini_ITS.Web.Controllers
             //await _usersRepository.DeleteAsync(guid);
             //var result = await _usersService.GetAsync();
 
-            return Ok(result);
+            return Ok(result.Results);
         }
     }
 }

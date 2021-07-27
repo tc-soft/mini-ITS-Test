@@ -237,7 +237,7 @@ namespace mini_ITS.Core.Tests.Services
         public async Task SetPasswordAsync()
         {
             //var user = _usersService.GetAsync("yaveomic");
-            //await _usersService.SetPasswordAsync("atkincol", "NoweHasłozcaszc123$!@#");
+            await _usersService.SetPasswordAsync("atkincol", "NoweHasłozcaszc123$!@#");
 
             string strPlain = " !}~ABC - It is test to cipher txt";
             TestContext.Out.WriteLine("Start:" + strPlain + " - txt originalny");
