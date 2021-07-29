@@ -5,15 +5,22 @@ import { UsersServices } from '../services/UsersServices';
 
 function List({ match }) {
     const { path } = match;
-    const [users, setUsers] = useState(null);
+    const [users, setUsers] = useState({
+        results: '',
+        currentPage: '',
+        resultsPerPage: '',
+        totalResults: '',
+        totalPages: ''
+    });
 
     useEffect(() => {
-        UsersServices.GetAll().then(x => {
-            setUsers(x);
-            console.table(x);
-        }
-        );
-        
+        setTimeout(() => {
+            UsersServices.GetAll()
+                .then(x => {
+                    setUsers(x);
+                    console.table(x);
+                });
+        }, 1000);
     }, []);
 
     function deleteUser(id) {
@@ -40,7 +47,7 @@ function List({ match }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {users && users.map(user =>
+                    {users.results && users.results.map(user =>
                         <tr key={user.id}>
                             <td>{user.login}</td>
                             <td>{user.email}</td>
@@ -56,14 +63,15 @@ function List({ match }) {
                             </td>
                         </tr>
                     )}
-                    {!users &&
+                    {!users.results &&
                         <tr>
                             <td colSpan="4" className="text-center">
                                 <div className="spinner-border spinner-border-lg align-center"></div>
+                            £aduje dane...
                             </td>
                         </tr>
                     }
-                    {users && !users.length &&
+                    {users.results && !users.results.length &&
                         <tr>
                             <td colSpan="4" className="text-center">
                                 <div className="p-2">No Users To Display</div>

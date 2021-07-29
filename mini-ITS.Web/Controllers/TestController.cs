@@ -75,7 +75,7 @@ namespace mini_ITS.Web.Controllers
             //await _usersRepository.DeleteAsync(guid);
             //var result = await _usersService.GetAsync();
 
-            return Ok(result.Results);
+            return Ok(result);
         }
     }
 }
