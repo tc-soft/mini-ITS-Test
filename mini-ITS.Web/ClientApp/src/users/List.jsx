@@ -66,7 +66,7 @@ function List({ match }) {
                     {!users.results &&
                         <tr>
                             <td colSpan="4" className="text-center">
-                                <div className="spinner-border spinner-border-lg align-center"></div>
+                            <div className="spinner-border spinner-border-lg align-center"></div>
                             £aduje dane...
                             </td>
                         </tr>
