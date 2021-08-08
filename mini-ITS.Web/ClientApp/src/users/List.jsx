@@ -40,17 +40,23 @@ function List({ match }) {
             <table className="">
                 <thead>
                     <tr>
-                        <th style={{ width: '30%' }}>Name</th>
-                        <th style={{ width: '30%' }}>Email</th>
-                        <th style={{ width: '30%' }}>Role</th>
-                        <th style={{ width: '10%' }}></th>
+                        <th style={{ width: '05%' }}>Lp.</th>
+                        <th style={{ width: '10%' }}>Login</th>
+                        <th style={{ width: '20%' }}>Imiê</th>
+                        <th style={{ width: '20%' }}>Nazwisko</th>
+                        <th style={{ width: '20%' }}>Dzia³</th>
+                        <th style={{ width: '10%' }}>Rola</th>
+                        <th style={{ width: '15%' }}></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.results && users.results.map(user =>
-                        <tr key={user.id}>
+                    {users.results && users.results.map((user, index) =>
+                        <tr key={user.login}>
+                            <td>{String("0" + index).slice(-2)}</td>
                             <td>{user.login}</td>
-                            <td>{user.email}</td>
+                            <td>{user.firstName}</td>
+                            <td>{user.lastName}</td>
+                            <td>{user.department}</td>
                             <td>{user.role}</td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                                 <Link to={`${path}/edit/${user.id}`} className="">Edit</Link>
