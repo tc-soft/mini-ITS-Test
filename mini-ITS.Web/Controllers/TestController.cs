@@ -55,7 +55,7 @@ namespace mini_ITS.Web.Controllers
                 SortColumnName = "Login",
                 SortDirection = "ASC",
                 Page = 1,
-                ResultsPerPage = 10
+                ResultsPerPage = 20
             });
 
             Guid guid = new Guid("e5daa03f-8dfa-4d1a-87b1-22d971f9654c");
@@ -79,7 +79,7 @@ namespace mini_ITS.Web.Controllers
             //await _usersRepository.DeleteAsync(guid);
             //var result = await _usersService.GetAsync();
 
-            return Ok(result.Results);
+            return Ok(result);
         }
     }
 }

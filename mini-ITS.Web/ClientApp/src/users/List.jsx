@@ -5,15 +5,22 @@ import { UsersServices } from '../services/UsersServices';
 
 function List({ match }) {
     const { path } = match;
-    const [users, setUsers] = useState(null);
+    const [users, setUsers] = useState({
+        results: '',
+        currentPage: '',
+        resultsPerPage: '',
+        totalResults: '',
+        totalPages: ''
+    });
 
     useEffect(() => {
-        UsersServices.GetAll().then(x => {
-            setUsers(x);
-            console.table(x);
-        }
-        );
-        
+        setTimeout(() => {
+            UsersServices.GetAll()
+                .then(x => {
+                    setUsers(x);
+                    console.table(x);
+                });
+        }, 1000);
     }, []);
 
     function deleteUser(id) {
@@ -33,17 +40,23 @@ function List({ match }) {
             <table className="">
                 <thead>
                     <tr>
-                        <th style={{ width: '30%' }}>Name</th>
-                        <th style={{ width: '30%' }}>Email</th>
-                        <th style={{ width: '30%' }}>Role</th>
-                        <th style={{ width: '10%' }}></th>
+                        <th style={{ width: '05%' }}>Lp.</th>
+                        <th style={{ width: '10%' }}>Login</th>
+                        <th style={{ width: '20%' }}>Imiê</th>
+                        <th style={{ width: '20%' }}>Nazwisko</th>
+                        <th style={{ width: '20%' }}>Dzia³</th>
+                        <th style={{ width: '10%' }}>Rola</th>
+                        <th style={{ width: '15%' }}></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users && users.map(user =>
-                        <tr key={user.id}>
+                    {users.results && users.results.map((user, index) =>
+                        <tr key={user.login}>
+                            <td>{String("0" + index).slice(-2)}</td>
                             <td>{user.login}</td>
-                            <td>{user.email}</td>
+                            <td>{user.firstName}</td>
+                            <td>{user.lastName}</td>
+                            <td>{user.department}</td>
                             <td>{user.role}</td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                                 <Link to={`${path}/edit/${user.id}`} className="">Edit</Link>
@@ -56,14 +69,15 @@ function List({ match }) {
                             </td>
                         </tr>
                     )}
-                    {!users &&
+                    {!users.results &&
                         <tr>
                             <td colSpan="4" className="text-center">
-                                <div className="spinner-border spinner-border-lg align-center"></div>
+                            <div className="spinner-border spinner-border-lg align-center"></div>
+                            £aduje dane...
                             </td>
                         </tr>
                     }
-                    {users && !users.length &&
+                    {users.results && !users.results.length &&
                         <tr>
                             <td colSpan="4" className="text-center">
                                 <div className="p-2">No Users To Display</div>
