@@ -3,6 +3,7 @@ import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 
 import Nav from './_components/Nav';
 import Home from './home/Index';
+import LoginForm from './home/LoginForm';
 import { Users } from './users/Index';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
                 <Switch>
                     <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
                     <Route exact path="/" component={Home} />
+                    <Route exact path="/Login" component={LoginForm} />
                     <Route path="/test" component={Users} />
                     <Redirect from="*" to="/" />
                 </Switch>
