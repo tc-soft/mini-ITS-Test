@@ -7,6 +7,8 @@ using mini_ITS.Core.Services;
 using mini_ITS.Core.Repository;
 using mini_ITS.Core.Models;
 using mini_ITS.Core.Database;
+using Microsoft.AspNetCore.Authorization;
+using mini_ITS.Web.Framework;
 
 namespace mini_ITS.Web.Controllers
 {
@@ -23,6 +25,8 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpGet]
+        [CookieAuth]
+        [Authorize("Admin")]
         public async Task<IActionResult> IndexAsync()
         {
             var myFilter = new List<SqlQueryCondition>()

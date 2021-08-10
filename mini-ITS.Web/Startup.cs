@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -12,6 +14,7 @@ using mini_ITS.Core.Options;
 using mini_ITS.Core.Repository;
 using mini_ITS.Core.Services;
 using mini_ITS.Web.Mapper;
+using System;
 
 namespace mini_ITS.Web
 {
@@ -37,6 +40,47 @@ namespace mini_ITS.Web
             services.AddSingleton(AutoMapperConfig.GetMapper());
             //potrzebne do Service
             services.AddSingleton<IPasswordHasher<Users>, PasswordHasher<Users>>();
+
+            //============= Do autoryzacji
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.Name = "mini-ITS.SessionCookie";
+                    options.LoginPath = new PathString("/Users/Login1");
+                    options.AccessDeniedPath = new PathString("/Users/Forbidden");
+                    options.ExpireTimeSpan = TimeSpan.FromDays(2);
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser()
+                          .RequireRole("Administrator");
+                });
+
+                options.AddPolicy("Manager", policy =>
+                {
+                    policy.RequireAuthenticatedUser()
+                          .RequireRole("Manager");
+                });
+
+                options.AddPolicy("User", policy =>
+                {
+                    policy.RequireAuthenticatedUser()
+                          .RequireRole("User");
+                });
+            });
+
+            
+            //services.AddSession(options =>
+            //{
+            //    options.IdleTimeout = TimeSpan.FromHours(1);
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.IsEssential = true;
+            //});
+            //============= Do autoryzacji
 
 
             services.AddControllersWithViews();
@@ -65,8 +109,20 @@ namespace mini_ITS.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
             app.UseRouting();
+
+            //============= Do autoryzacji
+            //Authorization: To jest weryfikacja czy user ma prawo dostêpu do konkretnych us³ug / zasobów.
+            //Pytania to "Czy user X mo¿e przeczytaæ Y ?", "Czy user X mo¿e zmieniæ Z ?".
+            app.UseAuthorization();
+
+            //Authentication: To jest weryfikacja czy user jest tym za którego siê podaje.
+            //Czyli problemy tutaj to "Kto to jest ?" i "Jak sprawdziæ, ¿e to ta osoba?".
+
+            //app.UseAuthentication();
+            //??????
+            //app.UseSession();
+            //============= Do autoryzacji
 
             app.UseEndpoints(endpoints =>
             {
