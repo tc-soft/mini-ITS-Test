@@ -1,6 +1,6 @@
-/*@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap');
-//@import "./normalize";
-//@import "./variables";*/
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap');
+@import "./normalize";
+@import "./variables";
 
 p, h1, h2, h3, h4, ul, li {
     margin: 0;
@@ -14,7 +14,7 @@ body {
   font-family: 'Titillium Web', sans-serif;
 }
 
-.maini {
+.main {
     display: grid;
     grid-template-rows: auto 1fr auto;
     background: #eeffbb;

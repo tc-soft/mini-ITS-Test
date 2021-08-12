@@ -12,7 +12,7 @@ function App() {
     const { pathname } = useLocation();
 
     return (
-        <main className="maini">
+        <main className="main">
             <header className="header">
                 <nav className="nav">
                     <Nav />
