@@ -6,13 +6,21 @@ import Home from './home/Index';
 import LoginForm from './home/LoginForm';
 import { Users } from './users/Index';
 
+import './styles/main.scss';
+
 function App() {
     const { pathname } = useLocation();
 
     return (
-        <div className="app-container bg-light">
-            <Nav />
-            <div className="container pt-4 pb-4">
+        <main className="maini">
+            <header className="header">
+                <nav className="nav">
+                    <Nav />
+                </nav>
+            </header>
+
+            <section className="section">
+                Tola ma kota
                 <Switch>
                     <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
                     <Route exact path="/" component={Home} />
@@ -20,8 +28,13 @@ function App() {
                     <Route path="/test" component={Users} />
                     <Redirect from="*" to="/" />
                 </Switch>
-            </div>
-        </div>
+            </section>
+
+            <footer>
+                <p>Author: XXxxxx YYyyyy</p>
+                <p><a href="mailto:hege@example.com">hege@example.com</a></p>
+            </footer>
+        </main>
     );
 }
 
