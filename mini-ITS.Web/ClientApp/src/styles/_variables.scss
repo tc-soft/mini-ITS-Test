@@ -1,0 +1,91 @@
+$color00: black;
+$color01: #666;
+$color02: #777;
+$color03: #888;
+$color04: #999;
+$color05: #aaa;
+$color06: #bbb;
+$color07: #ccc;
+$color08: #ddd;
+$color09: #eee;
+$color10: white;
+
+//https://coolors.co/a2d9f7-007cb0-12130f-5b9279
+$color11: #A2D9F7;
+$color12: #007CB0; //RAL5015 CMYK 90,40,0,0 RGB 0,124,176
+
+$color13: #4CAF50; //button Send
+$color14: #e53e3e; //error message
+$color15: red;
+$color16: blue;
+$color17: #ffb300; //icon E-mail
+$color18: #1877F2; //icon Facebook
+$color19: #2F2C2A; //icon GitHUB
+$color20: #3663AB; //icon Linkedin
+
+$color21: rgba(0, 0, 0, 0.1); //Menu główne a:hover
+
+$colorModemSnd: red;
+$colorModemRcv: lime;
+
+.fill00 {
+    fill: $color00;
+}
+.fill01 {
+    fill: $color01;
+}
+.fill02 {
+    fill: $color02;
+}
+.fill03 {
+    fill: $color03;
+}
+.fill04 {
+    fill: $color04;
+}
+.fill05 {
+    fill: $color05;
+}
+.fill06 {
+    fill: $color06;
+}
+.fill10 {
+    fill: $color10;
+}
+.fill11 {
+    fill: $color11;
+}
+.fill12 {
+    fill: $color12;
+}
+
+.fill55 {
+    fill: red;
+}
+
+.fillNone00-01 {
+    fill: none;
+    stroke: $color00;
+    stroke-width: 0.1;
+}
+
+.fillNone00-05 {
+    fill: none;
+    stroke: $color00;
+    stroke-width: 0.5;
+}
+
+.fillNone00-1 {
+    fill: none;
+    stroke: $color00;
+    stroke-width: 1;
+}
+
+.fillNone11-02 {
+    fill: none;
+    stroke: $color11;
+    stroke-width: 0.2;
+}
+
+.fntSVG1 {font-weight:normal;font-size:1.5em;}
+.fntSVG2 {font-weight:normal;font-size:1em;}

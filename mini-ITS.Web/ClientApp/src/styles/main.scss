@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap');
+@import "./normalize";
+@import "./variables";
+
+p, h1, h2, h3, h4, ul, li {
+    margin: 0;
+    padding: 0;
+}
+  
+body {
+  margin: 0;
+  padding: 0;
+  max-height: 100vh;
+  font-family: 'Titillium Web', sans-serif;
+  
+}
+
+@media (max-width: 720px) {
+  .header__menuDesktop { display: none; }
+  .header__menuMobile { display: flex; }
+  .header__hamburger {display: block;}
+}

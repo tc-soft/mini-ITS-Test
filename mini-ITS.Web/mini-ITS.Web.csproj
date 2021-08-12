@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\src\styles\" />
     <Folder Include="ClientApp_Example\" />
   </ItemGroup>
 
