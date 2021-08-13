@@ -42,7 +42,7 @@ function List({ match }) {
                     <tr>
                         <th style={{ width: '05%' }}>Lp.</th>
                         <th style={{ width: '10%' }}>Login</th>
-                        <th style={{ width: '20%' }}>Imiê</th>
+                        <th style={{ width: '20%' }}>Imie</th>
                         <th style={{ width: '20%' }}>Nazwisko</th>
                         <th style={{ width: '20%' }}>Dzia³</th>
                         <th style={{ width: '10%' }}>Rola</th>
