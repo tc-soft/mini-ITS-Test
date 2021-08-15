@@ -6,7 +6,7 @@ import Home from './home/Index';
 import LoginForm from './home/LoginForm';
 import { Users } from './users/Index';
 
-import './styles/main.scss';
+//import './styles/main.scss';
 
 function App() {
     const { pathname } = useLocation();

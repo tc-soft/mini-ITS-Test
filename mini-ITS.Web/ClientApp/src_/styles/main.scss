@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-@import "./normalize";
-@import "./variables";
+/*@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap');*/
+/*@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');*/
+/*@import "./normalize";*/
+/*@import "./variables";*/
 
 p, h1, h2, h3, h4, ul, li {
     margin: 0;
@@ -12,25 +12,25 @@ body {
   margin: 0;
   padding: 0;
   max-height: 100vh;
-  font-family: 'Titillium Web', sans-serif;
+  /*font-family: 'Titillium Web', sans-serif;*/
 }
 
 .main {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
+    /*display: grid;*/
+    /*grid-template-rows: auto 1fr auto;*/
     background: #eeffbb;
 }
 
 .header {
     padding: 1rem;
     background: #ddeeaa;
-    font-family: 'Roboto', sans-serif;
+    /*font-family: 'Roboto', sans-serif;*/
     /*grid-area: header;*/
 }
 
 .section {
     padding: 1rem;
-    place-items: center;
+    /*place-items: center;*/
 }
 
 .footer {
