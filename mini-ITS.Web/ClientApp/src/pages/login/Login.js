@@ -27,12 +27,9 @@ function LoginForm() {
                 })}
 
                 onSubmit={(values, { setSubmitting, resetForm }) => {
-                    //https://localhost:44375/Users/Login
                     const url = new URL(window.location.href);
                     const port = (url.port ? `:${url.port}` : "");
-                    //const apiAddress = `${url.protocol}//${url.hostname}${port}/api${url.pathname}`;
-                    const apiAddress = "https://localhost:44375/Users/Login";
-                    
+                    const apiAddress = `${url.protocol}//${url.hostname}${port}/Users${url.pathname}`;
 
                     fetch(apiAddress, {
                         method: 'POST',
@@ -47,11 +44,10 @@ function LoginForm() {
                     })
                     .then((response) => response.json())
                     .then((data) => {
-                        console.log("messages", data);
                         setSubmitting(false);
                         resetForm();
                         alert("Wiadomość wysłana.\n\nDziękuję.");
-                        handleLogin(values.login);
+                        handleLogin(data);
                     })
                     .catch((error) => {
                         setTimeout(() => {

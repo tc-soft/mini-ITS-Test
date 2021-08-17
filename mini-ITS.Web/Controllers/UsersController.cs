@@ -52,8 +52,17 @@ namespace mini_ITS.Web.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
-            //return Content("Użytkownik zalogowany...");
-            return Ok("Użytkownik zalogowany...");
+
+
+            return new JsonResult(new
+            {
+                login = loginData.Login,
+                firstName = "Tadek",
+                lastName = "Niejadek",
+                department = "IT",
+                role = "Administrator",
+                isLogged = true
+            });
         }
 
         public async Task<IActionResult> LogoutAsync()

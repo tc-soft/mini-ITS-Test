@@ -18,7 +18,7 @@ function Nav() {
                 <NavLink to="/test" className="nav-item nav-link">Users</NavLink>
 
                 <h5>
-                    Hi { currentUser ? currentUser : "stranger"}
+                    Hi {currentUser.isLogged ? currentUser.login : "stranger"}
                 </h5>
 
                 <button onClick={() => handleLogin("David")}>Login David</button>

@@ -3,7 +3,11 @@
 const AuthContext = createContext({
     currentUser: {
         login: '',
-        role: ''
+        firstName: '',
+        lastName: '',
+        department: '',
+        role: '',
+        isLogged: false
     },
     handleLogin: () => { },
     handleLogout: () => { }
@@ -14,13 +18,19 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState(
+        {
+            login: '',
+            firstName: '',
+            lastName: '',
+            department: '',
+            role: '',
+            isLogged: false
+        })
 
     const handleLogin = (user) => {
         try {
-            setCurrentUser({
-                login: 'user'
-            });
+            setCurrentUser(user);
         }
         catch (error) {
             console.log("Error while logging", error.message);
@@ -29,7 +39,8 @@ export default function AuthProvider({ children }) {
 
     const handleLogout = () => {
         try {
-            setCurrentUser(null);
+            setCurrentUser([null]);
+            console.table(currentUser);
         }
         catch (error) {
             console.log("Error while logging out", error.message);
