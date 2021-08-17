@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import { useAuth } from '../../components/AuthProvider';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import ErrorMessage from './ErrorMessage';
@@ -7,6 +8,7 @@ import ErrorMessage from './ErrorMessage';
 import '../../styles/pages/Login.scss';
 
 function LoginForm() {
+    const { currentUser, handleLogin, handleLogout } = useAuth();
     return (
         <React.Fragment>
             <Formik
@@ -25,9 +27,12 @@ function LoginForm() {
                 })}
 
                 onSubmit={(values, { setSubmitting, resetForm }) => {
+                    //https://localhost:44375/Users/Login
                     const url = new URL(window.location.href);
                     const port = (url.port ? `:${url.port}` : "");
-                    const apiAddress = `${url.protocol}//${url.hostname}${port}/api${url.pathname}`;
+                    //const apiAddress = `${url.protocol}//${url.hostname}${port}/api${url.pathname}`;
+                    const apiAddress = "https://localhost:44375/Users/Login";
+                    
 
                     fetch(apiAddress, {
                         method: 'POST',
@@ -36,9 +41,8 @@ function LoginForm() {
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({
-                            name: values.name,
-                            email: values.email,
-                            message: values.message
+                            login: values.login,
+                            password: values.password
                         })
                     })
                     .then((response) => response.json())
@@ -47,13 +51,14 @@ function LoginForm() {
                         setSubmitting(false);
                         resetForm();
                         alert("Wiadomość wysłana.\n\nDziękuję.");
+                        handleLogin(values.login);
                     })
                     .catch((error) => {
                         setTimeout(() => {
                             console.error('Error:', error);
                             setSubmitting(false);
                             alert("Wiadomość nie została wysłana.\n\nBłąd serwera.");
-                        }, 400);
+                        }, 200);
                     });
                 }}
             >

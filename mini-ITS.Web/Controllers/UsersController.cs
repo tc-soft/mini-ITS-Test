@@ -20,14 +20,15 @@ namespace mini_ITS.Web.Controllers
         {
             _usersServices = usersServices;
         }
-        // GET: UsersController
-        public async Task<IActionResult> LoginAsync()
+
+        [HttpPost]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData)
         {
             //var user = await _usersServices.GetAsync("ciszetad");
 
             var claimList = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, "ciszetad"),
+                new Claim(ClaimTypes.Name, loginData.Login),
                 new Claim(ClaimTypes.Role, "Administrator")
             };
 
@@ -51,7 +52,8 @@ namespace mini_ITS.Web.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
-            return Content("Użytkownik zalogowany...");
+            //return Content("Użytkownik zalogowany...");
+            return Ok("Użytkownik zalogowany...");
         }
 
         public async Task<IActionResult> LogoutAsync()
@@ -133,6 +135,13 @@ namespace mini_ITS.Web.Controllers
         public IActionResult Forbidden()
         {
             return Content("Eeeejjj, masz brak uprawnień...");
+        }
+
+        public class LoginData
+        {
+            public string Login { get; set; }
+
+            public string Password { get; set; }
         }
     }
 }
