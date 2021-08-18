@@ -179,7 +179,7 @@ namespace mini_ITS.Core.Services
             }
             else
             {
-                throw new Exception($"Brak użytkownika '{username}' w bazie.");
+                //throw new Exception($"Brak użytkownika '{username}' w bazie.");
             }
 
             return results;

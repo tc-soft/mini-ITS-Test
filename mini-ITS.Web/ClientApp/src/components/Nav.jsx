@@ -9,17 +9,39 @@ function Nav() {
             <div className="">
                 <NavLink exact to="/" className="nav-item nav-link">Home</NavLink>
                 &nbsp;
-                <NavLink exact to="/Homero" className="nav-item nav-link">Homero</NavLink>
-                &nbsp;
-                <NavLink exact to="/Homero2" className="nav-item nav-link">Homero2</NavLink>
-                &nbsp;
                 <NavLink exact to="/Login" className="nav-item nav-link">Login</NavLink>
                 &nbsp;
                 <NavLink to="/test" className="nav-item nav-link">Users</NavLink>
 
                 <h5>
-                    Hi {currentUser.isLogged ? currentUser.login : "stranger"}
+                    {currentUser.isLogged ? null : "Unknown"}
                 </h5>
+
+                {currentUser.isLogged ?
+                    (
+                        <React.Fragment>
+                                <p>Login      : {currentUser.login}</p>
+                                <p>firstName  : {currentUser.firstName}</p>
+                                <p>lastName   : {currentUser.lastName}</p>
+                                <p>Department : {currentUser.department}</p>
+                                <p>Role       : {currentUser.role}</p>
+                                <p>isLogged   : {currentUser.isLogged.toString()}</p>
+                                <br/>
+                        </React.Fragment>
+                    )
+                    :
+                    (
+                        <React.Fragment>
+                            <p>Login      : {currentUser.login}</p>
+                            <p>firstName  : {currentUser.firstName}</p>
+                            <p>lastName   : {currentUser.lastName}</p>
+                            <p>Department : {currentUser.department}</p>
+                            <p>Role       : {currentUser.role}</p>
+                            <p>isLogged   : {currentUser.isLogged.toString()}</p>
+                            <br />
+                        </React.Fragment>
+                    )
+                }
 
                 <button onClick={() => handleLogin("David")}>Login David</button>
                 <button onClick={() => handleLogin("Zenek")}>Login Zenek</button>

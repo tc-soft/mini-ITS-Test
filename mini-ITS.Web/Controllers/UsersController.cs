@@ -22,47 +22,46 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpPost]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData)
         {
-            //var user = await _usersServices.GetAsync("ciszetad");
-
-            var claimList = new List<Claim>()
+            try
             {
-                new Claim(ClaimTypes.Name, loginData.Login),
-                new Claim(ClaimTypes.Role, "Administrator")
-            };
+                if (await _usersServices.LoginAsync(loginData.Login, loginData.Password))
+                {
+                    var usersDto = await _usersServices.GetAsync(loginData.Login);
+                    var claimList = new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.Name, usersDto.Login),
+                        new Claim(ClaimTypes.Role, usersDto.Role)
+                    };
 
-            //var claimList = new List<Claim>();
-            //claimList.Add(new Claim(ClaimTypes.Name, "ciszetad"));
-            //claimList.Add(new Claim(ClaimTypes.Role, "Administrator"));
+                    var identity = new ClaimsIdentity(claimList, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            var claimsIdentity = new ClaimsIdentity(claimList, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            //sprawdzić co się stanie po 10 minutach
-            //var authProperties = new AuthenticationProperties
-            //{
-            //    ExpiresUtc = DateTime.Now.AddMinutes(10),
-            //};
-
-            //await HttpContext.SignInAsync(
-            //    CookieAuthenticationDefaults.AuthenticationScheme,
-            //    new ClaimsPrincipal(claimsIdentity),
-            //    authProperties);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
-
-
-
-            return new JsonResult(new
+                    return new JsonResult(new
+                    {
+                        login = usersDto.Login,
+                        firstName = usersDto.FirstName,
+                        lastName = usersDto.LastName,
+                        department = usersDto.Department,
+                        role = usersDto.Role,
+                        isLogged = true
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        isLogged = false
+                    });
+                }
+            }
+            catch (Exception ex)
             {
-                login = loginData.Login,
-                firstName = "Tadek",
-                lastName = "Niejadek",
-                department = "IT",
-                role = "Administrator",
-                isLogged = true
-            });
+                throw new Exception($"Błądos {ex.Message}");
+            }
         }
 
         public async Task<IActionResult> LogoutAsync()
@@ -145,6 +144,8 @@ namespace mini_ITS.Web.Controllers
         {
             return Content("Eeeejjj, masz brak uprawnień...");
         }
+
+
 
         public class LoginData
         {

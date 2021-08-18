@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { useAuth } from '../../components/AuthProvider';
 import { Formik, Form, Field } from 'formik';
@@ -8,9 +8,11 @@ import ErrorMessage from './ErrorMessage';
 import '../../styles/pages/Login.scss';
 
 function LoginForm() {
-    const { currentUser, handleLogin, handleLogout } = useAuth();
+    const { handleLogin } = useAuth();
+    const [loginError, setLoginError] = useState("");
     return (
         <React.Fragment>
+            {}
             <Formik
                 initialValues={{
                     login: '',
@@ -46,14 +48,16 @@ function LoginForm() {
                     .then((data) => {
                         setSubmitting(false);
                         resetForm();
-                        alert("Wiadomość wysłana.\n\nDziękuję.");
-                        handleLogin(data);
+                        
+                        data.isLogged ?
+                            handleLogin(data)
+                            :
+                            setLoginError("Email or Password is incorrect");
                     })
                     .catch((error) => {
                         setTimeout(() => {
                             console.error('Error:', error);
                             setSubmitting(false);
-                            alert("Wiadomość nie została wysłana.\n\nBłąd serwera.");
                         }, 200);
                     });
                 }}
@@ -63,6 +67,16 @@ function LoginForm() {
                         className="login">
                         <h2 className="login__title">Zaloguj się</h2>
                         <br/>
+
+                        {loginError && (
+                            <div style={{ color: "red" }}>
+                                <span>{loginError}</span>
+                            </div>
+                        )}
+
+                        {loginError && dirty ?
+                            setLoginError("") : null
+                        }
 
                         <label htmlFor="login">Nazwa użytkownika</label><br />
                         <Field

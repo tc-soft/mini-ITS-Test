@@ -81,5 +81,12 @@ namespace mini_ITS.Web.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SetPasswordAsync()
+        {
+            await _usersService.SetPasswordAsync("admin", "admin");
+            return Ok("Password SET");
+        }
     }
 }

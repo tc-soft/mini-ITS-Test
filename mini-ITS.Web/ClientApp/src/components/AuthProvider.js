@@ -39,7 +39,7 @@ export default function AuthProvider({ children }) {
 
     const handleLogout = () => {
         try {
-            setCurrentUser([null]);
+            setCurrentUser({ isLogged: false });
             console.table(currentUser);
         }
         catch (error) {
