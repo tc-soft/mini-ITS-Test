@@ -39,8 +39,7 @@ export default function AuthProvider({ children }) {
 
     const handleLogout = () => {
         try {
-            setCurrentUser({ isLogged: false });
-            console.table(currentUser);
+            setCurrentUser(null);
         }
         catch (error) {
             console.log("Error while logging out", error.message);

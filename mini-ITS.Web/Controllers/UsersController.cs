@@ -52,15 +52,12 @@ namespace mini_ITS.Web.Controllers
                 }
                 else
                 {
-                    return new JsonResult(new
-                    {
-                        isLogged = false
-                    });
+                    return StatusCode(401, "Aaaajjjjjj, Login or Password is incorrect");
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"Błądos {ex.Message}");
+                throw new Exception($"Error: {ex.Message}");
             }
         }
 

@@ -14,10 +14,11 @@ function Nav() {
                 <NavLink to="/test" className="nav-item nav-link">Users</NavLink>
 
                 <h5>
-                    {currentUser.isLogged ? null : "Unknown"}
+                    {currentUser ? null : "Unknown"}
+                    {/*{currentUser == null ? null : "Unknown"}*/}
                 </h5>
 
-                {currentUser.isLogged ?
+                {currentUser ?
                     (
                         <React.Fragment>
                                 <p>Login      : {currentUser.login}</p>
@@ -25,19 +26,19 @@ function Nav() {
                                 <p>lastName   : {currentUser.lastName}</p>
                                 <p>Department : {currentUser.department}</p>
                                 <p>Role       : {currentUser.role}</p>
-                                <p>isLogged   : {currentUser.isLogged.toString()}</p>
+                                {/*<p>isLogged   : {currentUser.isLogged.toString()}</p>*/}
                                 <br/>
                         </React.Fragment>
                     )
                     :
                     (
                         <React.Fragment>
-                            <p>Login      : {currentUser.login}</p>
-                            <p>firstName  : {currentUser.firstName}</p>
-                            <p>lastName   : {currentUser.lastName}</p>
-                            <p>Department : {currentUser.department}</p>
-                            <p>Role       : {currentUser.role}</p>
-                            <p>isLogged   : {currentUser.isLogged.toString()}</p>
+                            <p>Login      :</p>
+                            <p>firstName  :</p>
+                            <p>lastName   :</p>
+                            <p>Department :</p>
+                            <p>Role       :</p>
+                            {/*<p>isLogged   : {currentUser.isLogged.toString()}</p>*/}
                             <br />
                         </React.Fragment>
                     )

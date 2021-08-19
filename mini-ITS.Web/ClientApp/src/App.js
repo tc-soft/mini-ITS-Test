@@ -16,8 +16,8 @@ function App() {
         <AuthProvider
             value={{
                 currentUser,
-                onLogin: setCurrentUser,
-                onLogout: () => setCurrentUser(null)
+                handleLogin: () => { },
+                handleLogout: () => { }
             }}
         >
             <main className="main">

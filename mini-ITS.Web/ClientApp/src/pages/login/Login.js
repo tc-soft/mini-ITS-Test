@@ -8,7 +8,7 @@ import ErrorMessage from './ErrorMessage';
 import '../../styles/pages/Login.scss';
 
 function LoginForm() {
-    const { handleLogin } = useAuth();
+    const { handleLogin, currentUser } = useAuth();
     const [loginError, setLoginError] = useState("");
     return (
         <React.Fragment>
@@ -44,19 +44,28 @@ function LoginForm() {
                             password: values.password
                         })
                     })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        setSubmitting(false);
-                        resetForm();
-                        
-                        data.isLogged ?
-                            handleLogin(data)
-                            :
-                            setLoginError("Email or Password is incorrect");
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.json()
+                                .then((data) => {
+                                    setSubmitting(false);
+                                    resetForm();
+                                    handleLogin(data);
+                                    setLoginError(null);
+                                })
+                        } else {
+                            return response.json()
+                                .then((data) => {
+                                    setLoginError(data);
+                                    setSubmitting(false);
+                                    resetForm();
+                                })
+                        }
                     })
                     .catch((error) => {
                         setTimeout(() => {
                             console.error('Error:', error);
+                            alert(error);
                             setSubmitting(false);
                         }, 200);
                     });
@@ -73,10 +82,6 @@ function LoginForm() {
                                 <span>{loginError}</span>
                             </div>
                         )}
-
-                        {loginError && dirty ?
-                            setLoginError("") : null
-                        }
 
                         <label htmlFor="login">Nazwa użytkownika</label><br />
                         <Field

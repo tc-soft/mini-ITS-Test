@@ -17,7 +17,7 @@ body {
 .main {
     display: grid;
     grid-template-rows: auto 1fr auto;
-    background-image: linear-gradient(to right, white, gray);
+    /*background-image: linear-gradient(to right, white, gray);*/
 
     &__header {
         padding: 1rem;
