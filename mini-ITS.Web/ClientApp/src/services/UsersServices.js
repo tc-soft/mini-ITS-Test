@@ -1,31 +1,41 @@
-import { FetchWrapper } from '../api/FetchWrapper';
+import { fetchWrapper } from '../api/FetchWrapper';
 
-const baseUrl = '/test';
+const baseUrl = '/Users';
 
-export const UsersServices = {
-    GetAll,
-    GetById,
-    Create,
-    Update,
-    Delete
+export const usersServices = {
+    getAll,
+    getById,
+    create,
+    update,
+    delete: _delete,
+    login,
+    logout
 };
 
-function GetAll() {
-    return FetchWrapper.Get(baseUrl);
+function getAll() {
+    return fetchWrapper.get(`${baseUrl}/GetAll`);
 }
 
-function GetById(id) {
-    return FetchWrapper.Get(`${baseUrl}/${id}`);
+function getById(id) {
+    return fetchWrapper.Get(`${baseUrl}/${id}`);
 }
 
-function Create(params) {
-    return FetchWrapper.Post(baseUrl, params);
+function create(params) {
+    return fetchWrapper.Post(baseUrl, params);
 }
 
-function Update(id, params) {
-    return FetchWrapper.Put(`${baseUrl}/${id}`, params);
+function update(id, params) {
+    return fetchWrapper.Put(`${baseUrl}/${id}`, params);
 }
 
-function Delete(id) {
-    return FetchWrapper.Delete(`${baseUrl}/${id}`);
+function _delete(id) {
+    return fetchWrapper.Delete(`${baseUrl}/${id}`);
+}
+
+function login(login, password) {
+    return fetchWrapper.login(`${baseUrl}/Login`, login, password);
+}
+
+function logout() {
+    return fetchWrapper.logout(`${baseUrl}/Logout`);
 }

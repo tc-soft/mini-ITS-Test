@@ -1,4 +1,5 @@
 ﻿import { createContext, useContext, useState } from 'react';
+import { usersServices } from '../services/UsersServices';
 
 const AuthContext = createContext({
     currentUser: {
@@ -39,7 +40,22 @@ export default function AuthProvider({ children }) {
 
     const handleLogout = () => {
         try {
-            setCurrentUser(null);
+            usersServices.logout()
+                .then((response) => {
+                    console.info("Tutaj");
+                    if (response.ok) {
+                        return response.json()
+                            .then((data) => {
+                                setCurrentUser(null);
+                                console.info(data);
+                            })
+                    } else {
+                        return response.json()
+                            .then((data) => {
+                                console.warn(data);
+                            })
+                    }
+                })
         }
         catch (error) {
             console.log("Error while logging out", error.message);

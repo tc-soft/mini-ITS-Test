@@ -4,6 +4,7 @@ import { useAuth } from '../../components/AuthProvider';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import ErrorMessage from './ErrorMessage';
+import { usersServices } from '../../services/UsersServices';
 
 import '../../styles/pages/Login.scss';
 
@@ -29,21 +30,7 @@ function LoginForm() {
                 })}
 
                 onSubmit={(values, { setSubmitting, resetForm }) => {
-                    const url = new URL(window.location.href);
-                    const port = (url.port ? `:${url.port}` : "");
-                    const apiAddress = `${url.protocol}//${url.hostname}${port}/Users${url.pathname}`;
-
-                    fetch(apiAddress, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            login: values.login,
-                            password: values.password
-                        })
-                    })
+                    usersServices.login(values.login, values.password)
                     .then((response) => {
                         if (response.ok) {
                             return response.json()

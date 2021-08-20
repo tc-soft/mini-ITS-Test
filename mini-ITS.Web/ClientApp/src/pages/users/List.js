@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+Ôªøimport React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { UsersServices } from '../../services/UsersServices';
+import { usersServices } from '../../services/UsersServices';
 
 function List({ match }) {
     const { path } = match;
@@ -15,7 +15,7 @@ function List({ match }) {
 
     useEffect(() => {
         setTimeout(() => {
-            UsersServices.GetAll()
+            usersServices.getAll()
                 .then(x => {
                     setUsers(x);
                     console.table(x);
@@ -28,7 +28,7 @@ function List({ match }) {
             if (x.id === id) { x.isDeleting = true; }
             return x;
         }));
-        UsersServices.delete(id).then(() => {
+        usersServices.delete(id).then(() => {
             setUsers(users => users.filter(x => x.id !== id));
         });
     }
@@ -44,7 +44,7 @@ function List({ match }) {
                         <th style={{ width: '10%' }}>Login</th>
                         <th style={{ width: '20%' }}>Imie</th>
                         <th style={{ width: '20%' }}>Nazwisko</th>
-                        <th style={{ width: '20%' }}>Dzia≥</th>
+                        <th style={{ width: '20%' }}>Dzia≈Ç</th>
                         <th style={{ width: '10%' }}>Rola</th>
                         <th style={{ width: '15%' }}></th>
                     </tr>
@@ -61,7 +61,7 @@ function List({ match }) {
                             <td style={{ whiteSpace: 'nowrap' }}>
                                 <Link to={`${path}/edit/${user.id}`} className="">Edit</Link>
                                 <button onClick={() => deleteUser(user.id)} className="" disabled={user.isDeleting}>
-                                    {user.isDeleting 
+                                    {user.isDeleting
                                         ? <span className=""></span>
                                         : <span>Delete</span>
                                     }
@@ -72,8 +72,8 @@ function List({ match }) {
                     {!users.results &&
                         <tr>
                             <td colSpan="4" className="text-center">
-                            <div className="spinner-border spinner-border-lg align-center"></div>
-                            £aduje dane...
+                                <div className="spinner-border spinner-border-lg align-center"></div>
+                            ≈Åaduje dane...
                             </td>
                         </tr>
                     }
