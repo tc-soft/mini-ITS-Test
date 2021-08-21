@@ -1,15 +1,15 @@
 ﻿import { createContext, useContext, useState } from 'react';
 import { usersServices } from '../services/UsersServices';
 
+//login: '',
+//    firstName: '',
+//        lastName: '',
+//            department: '',
+//                role: '',
+//                    isLogged: false
+
 const AuthContext = createContext({
-    currentUser: {
-        login: '',
-        firstName: '',
-        lastName: '',
-        department: '',
-        role: '',
-        isLogged: false
-    },
+    currentUser: {},
     handleLogin: () => { },
     handleLogout: () => { }
 });
@@ -42,7 +42,6 @@ export default function AuthProvider({ children }) {
         try {
             usersServices.logout()
                 .then((response) => {
-                    console.info("Tutaj");
                     if (response.ok) {
                         return response.json()
                             .then((data) => {

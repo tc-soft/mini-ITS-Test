@@ -30,7 +30,7 @@ function App() {
                 <section className="main__section">
                     <Switch>
                         <Route exact path="/Login" component={Login} />
-                        <Route path="/test" component={Users} />
+                        <Route path="/Users" component={Users} />
                     </Switch>
                 </section>
 
