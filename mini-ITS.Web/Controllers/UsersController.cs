@@ -18,10 +18,12 @@ namespace mini_ITS.Web.Controllers
     public class UsersController : Controller
     {
         private readonly IUsersService _usersServices;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsersController(IUsersService usersServices)
+        public UsersController(IUsersService usersServices, IHttpContextAccessor httpContextAccessor)
         {
             _usersServices = usersServices;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost]
@@ -64,12 +66,43 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
+        [HttpGet]
+        [CookieAuth]
+        public async Task<IActionResult> LoginStatusAsync()
+        {
+            try
+            {
+                var usersDto = await _usersServices.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
+
+                return new JsonResult(new
+                {
+                    login = usersDto.Login,
+                    firstName = usersDto.FirstName,
+                    lastName = usersDto.LastName,
+                    department = usersDto.Department,
+                    role = usersDto.Role,
+                    isLogged = true
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
         [HttpDelete]
         public async Task<IActionResult> LogoutAsync()
         {
-            await HttpContext.SignOutAsync();
-            //return Content("Wylogowanie użytkownika...");
-            return StatusCode(200, "Wylogowano...");
+            try
+            {
+                await HttpContext.SignOutAsync();
+                //return Content("Wylogowanie użytkownika...");
+                return StatusCode(200, "Wylogowano...");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
         }
 
         [HttpGet]

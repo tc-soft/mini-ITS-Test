@@ -73,7 +73,10 @@ namespace mini_ITS.Web
                 });
             });
 
-            
+            //================= do kontrolera UsersController
+            services.AddHttpContextAccessor();
+
+
             //services.AddSession(options =>
             //{
             //    options.IdleTimeout = TimeSpan.FromHours(1);

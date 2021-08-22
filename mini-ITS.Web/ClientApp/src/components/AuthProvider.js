@@ -1,33 +1,38 @@
-﻿import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { usersServices } from '../services/UsersServices';
 
-//login: '',
-//    firstName: '',
-//        lastName: '',
-//            department: '',
-//                role: '',
-//                    isLogged: false
-
-const AuthContext = createContext({
-    currentUser: {},
-    handleLogin: () => { },
-    handleLogout: () => { }
-});
+const AuthContext = createContext();
 
 export function useAuth() {
     return useContext(AuthContext);
 }
 
 export default function AuthProvider({ children }) {
-    const [currentUser, setCurrentUser] = useState(
-        {
-            login: '',
-            firstName: '',
-            lastName: '',
-            department: '',
-            role: '',
-            isLogged: false
-        })
+
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loginStatus, setLoginStatus] = useState(false);
+
+    console.log(`currentUser : ${currentUser}, loginStatus : ${loginStatus}`);
+
+    if (!currentUser && !loginStatus) {
+        setLoginStatus(true);
+        usersServices.loginStatus()
+            .then((response) => {
+                if (response.ok) {
+                    return response.json()
+                        .then((data) => {
+                            console.log("currentUser : pobieranie");
+                            setCurrentUser(data);
+                        })
+                } else {
+                    return response.json()
+                        .then((data) => {
+                            console.log("currentUser : 404 ??");
+                            console.warn(data);
+                        })
+                }
+            });
+    }
 
     const handleLogin = (user) => {
         try {

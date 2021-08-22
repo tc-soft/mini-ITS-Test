@@ -4,6 +4,7 @@ export const fetchWrapper = {
     put,
     delete: _delete,
     login,
+    loginStatus,
     logout
 }
 
@@ -50,6 +51,17 @@ function login(url, login, password) {
             login: login,
             password: password
         })
+    };
+    return fetch(url, requestOptions);
+}
+
+function loginStatus(url) {
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
     };
     return fetch(url, requestOptions);
 }

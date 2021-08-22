@@ -9,6 +9,7 @@ export const usersServices = {
     update,
     delete: _delete,
     login,
+    loginStatus,
     logout
 };
 
@@ -34,6 +35,10 @@ function _delete(id) {
 
 function login(login, password) {
     return fetchWrapper.login(`${baseUrl}/Login`, login, password);
+}
+
+function loginStatus() {
+    return fetchWrapper.loginStatus(`${baseUrl}/LoginStatus`);
 }
 
 function logout() {

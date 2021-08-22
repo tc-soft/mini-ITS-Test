@@ -9,7 +9,7 @@ import { usersServices } from '../../services/UsersServices';
 import '../../styles/pages/Login.scss';
 
 function LoginForm() {
-    const { handleLogin, currentUser } = useAuth();
+    const { handleLogin } = useAuth();
     const [loginError, setLoginError] = useState("");
     return (
         <React.Fragment>

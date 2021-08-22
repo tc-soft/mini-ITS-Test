@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { Route, Switch, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
 
 import Nav from './components/Nav';
 import AuthProvider from './components/AuthProvider';
@@ -9,17 +9,10 @@ import { Users } from './pages/users/Index';
 import './styles/main.scss';
 
 function App() {
-    const { pathname } = useLocation();
-    const [currentUser, setCurrentUser] = useState(null);
+    //const [currentUser] = useState(null);
 
     return (
-        <AuthProvider
-            value={{
-                currentUser,
-                handleLogin: () => { },
-                handleLogout: () => { }
-            }}
-        >
+        <AuthProvider>
             <main className="main">
                 <header className="main__header">
                     <nav className="main__nav">
