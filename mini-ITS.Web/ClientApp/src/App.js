@@ -9,7 +9,6 @@ import { Users } from './pages/users/Index';
 import './styles/main.scss';
 
 function App() {
-    //const [currentUser] = useState(null);
 
     return (
         <AuthProvider>

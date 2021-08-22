@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import { useHistory } from "react-router-dom";
 import { usersServices } from '../services/UsersServices';
 
 const AuthContext = createContext();
@@ -8,31 +9,35 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-
     const [currentUser, setCurrentUser] = useState(null);
     const [loginStatus, setLoginStatus] = useState(false);
+    const history = useHistory();
 
-    console.log(`currentUser : ${currentUser}, loginStatus : ${loginStatus}`);
 
     if (!currentUser && !loginStatus) {
         setLoginStatus(true);
-        usersServices.loginStatus()
-            .then((response) => {
-                if (response.ok) {
-                    return response.json()
-                        .then((data) => {
-                            console.log("currentUser : pobieranie");
-                            setCurrentUser(data);
-                        })
-                } else {
-                    return response.json()
-                        .then((data) => {
-                            console.log("currentUser : 404 ??");
-                            console.warn(data);
-                        })
-                }
-            });
+
+        if (window.performance) {
+            if (performance.navigation.type === 1) {
+                //This page is reloaded
+                usersServices.loginStatus()
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.json()
+                                .then((data) => {
+                                    console.log("currentUser : check login status");
+                                    setCurrentUser(data);
+                                })
+                        }
+                    });
+            } else {
+                //This page is not reloaded
+                console.log("currentUser : check login status - not reloaded");
+            }
+        }
     }
+
+    console.log(`currentUser : ${currentUser}, loginStatus : ${loginStatus}`);
 
     const handleLogin = (user) => {
         try {
@@ -51,6 +56,7 @@ export default function AuthProvider({ children }) {
                         return response.json()
                             .then((data) => {
                                 setCurrentUser(null);
+                                history.push("/");
                                 console.info(data);
                             })
                     } else {

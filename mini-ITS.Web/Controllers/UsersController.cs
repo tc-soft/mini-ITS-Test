@@ -73,7 +73,7 @@ namespace mini_ITS.Web.Controllers
             try
             {
                 var usersDto = await _usersServices.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-
+                
                 return new JsonResult(new
                 {
                     login = usersDto.Login,
@@ -86,7 +86,7 @@ namespace mini_ITS.Web.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error: {ex.Message}");
+                throw new Exception($"Error123: {ex.Message}");
             }
         }
 

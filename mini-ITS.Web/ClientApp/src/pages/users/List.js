@@ -18,9 +18,9 @@ function List({ match }) {
             usersServices.getAll()
                 .then(x => {
                     setUsers(x);
-                    console.table(x);
+                    //console.table(x);
                 });
-        }, 1000);
+        }, 3000);
     }, []);
 
     function deleteUser(id) {
@@ -36,8 +36,8 @@ function List({ match }) {
     return (
         <div>
             <h1>Users</h1>
-            <Link to={`${path}/add`} className="">Add User</Link>
-            <table className="">
+            <Link to={`${path}/add`}>Add User</Link>
+            <table>
                 <thead>
                     <tr>
                         <th style={{ width: '05%' }}>Lp.</th>
@@ -58,11 +58,11 @@ function List({ match }) {
                             <td>{user.lastName}</td>
                             <td>{user.department}</td>
                             <td>{user.role}</td>
-                            <td style={{ whiteSpace: 'nowrap' }}>
-                                <Link to={`${path}/edit/${user.id}`} className="">Edit</Link>
-                                <button onClick={() => deleteUser(user.id)} className="" disabled={user.isDeleting}>
+                            <td>
+                                <Link to={`${path}/edit/${user.id}`}>Edit</Link>
+                                <button onClick={() => deleteUser(user.id)} disabled={user.isDeleting}>
                                     {user.isDeleting
-                                        ? <span className=""></span>
+                                        ? <span></span>
                                         : <span>Delete</span>
                                     }
                                 </button>
@@ -71,16 +71,15 @@ function List({ match }) {
                     )}
                     {!users.results &&
                         <tr>
-                            <td colSpan="4" className="text-center">
-                                <div className="spinner-border spinner-border-lg align-center"></div>
-                            Ładuje dane...
+                            <td>
+                                <div>Ładuje dane...</div>
                             </td>
                         </tr>
                     }
                     {users.results && !users.results.length &&
                         <tr>
-                            <td colSpan="4" className="text-center">
-                                <div className="p-2">No Users To Display</div>
+                            <td>
+                                <div>No Users To Display</div>
                             </td>
                         </tr>
                     }

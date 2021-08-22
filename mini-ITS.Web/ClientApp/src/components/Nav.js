@@ -19,16 +19,16 @@ function Nav() {
                     </button>
                 </NavLink>
                 &nbsp;
-                <NavLink to="/Users" className="nav-item nav-link">
-                    <button type="button">
-                        Users
-                    </button>
-                </NavLink>
-
-                <h5>
-                    {currentUser ? null : "Unknown"}
-                    {/*{currentUser == null ? null : "Unknown"}*/}
-                </h5>
+                {currentUser
+                    ?
+                    <NavLink to="/Users" className="nav-item nav-link">
+                        <button type="button">
+                            Users
+                        </button>
+                    </NavLink>
+                    :
+                    null
+                }
 
                 {currentUser ?
                     (

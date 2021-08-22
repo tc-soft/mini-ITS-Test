@@ -84,6 +84,7 @@ function LoginForm() {
                             name="password"
                             type="password"
                             placeholder="Wpiz hasło"
+                            autoComplete="on"
                             className={errors.email && (touched.email || values.email) && "contact__ValidationError"}
                         />
                         <ErrorMessage errors={errors.email} touched={touched.email} values={values.email} />

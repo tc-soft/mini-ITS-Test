@@ -83,8 +83,8 @@ function handleResponse(response) {
             return responseData;
         })
         .catch(error => {
-                console.warn(error);
-                Promise.reject(error);
+                //console.warn(error);
+                //Promise.reject(error);
             }
         );
 }
