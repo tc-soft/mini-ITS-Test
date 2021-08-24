@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { usersServices } from '../../services/UsersServices';
 
-function List({ match }) {
+function UsersList({ match }) {
     const { path } = match;
     const [users, setUsers] = useState({
         results: '',
@@ -18,9 +18,8 @@ function List({ match }) {
             usersServices.getAll()
                 .then(x => {
                     setUsers(x);
-                    //console.table(x);
                 });
-        }, 3000);
+        }, 0);
     }, []);
 
     function deleteUser(id) {
@@ -36,7 +35,7 @@ function List({ match }) {
     return (
         <div>
             <h1>Users</h1>
-            <Link to={`${path}/add`}>Add User</Link>
+            <Link to={`${path}/add`}>Dodaj</Link>
             <table>
                 <thead>
                     <tr>
@@ -59,7 +58,10 @@ function List({ match }) {
                             <td>{user.department}</td>
                             <td>{user.role}</td>
                             <td>
-                                <Link to={`${path}/edit/${user.id}`}>Edit</Link>
+                                <button>
+                                    <Link to={`${path}/edit/${user.id}`}>Edit</Link>
+                                </button>
+                                
                                 <button onClick={() => deleteUser(user.id)} disabled={user.isDeleting}>
                                     {user.isDeleting
                                         ? <span></span>
@@ -89,4 +91,4 @@ function List({ match }) {
     );
 }
 
-export { List };
+export { UsersList };

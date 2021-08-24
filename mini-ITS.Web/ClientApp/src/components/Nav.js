@@ -4,6 +4,7 @@ import { useAuth } from './AuthProvider';
 
 function Nav() {
     const { currentUser, handleLogout } = useAuth();
+
     return (
         <nav className="">
             <div className="">

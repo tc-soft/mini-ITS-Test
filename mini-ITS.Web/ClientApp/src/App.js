@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router-dom';
 import Nav from './components/Nav';
 import AuthProvider from './components/AuthProvider';
 import Login from './pages/login/Login';
-import { Users } from './pages/users/Index';
+import { Users } from './pages/users/Users';
 
 import './styles/main.scss';
 

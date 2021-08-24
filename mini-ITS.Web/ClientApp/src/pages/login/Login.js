@@ -13,7 +13,6 @@ function LoginForm() {
     const [loginError, setLoginError] = useState("");
     return (
         <React.Fragment>
-            {}
             <Formik
                 initialValues={{
                     login: '',
