@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +19,13 @@ namespace mini_ITS.Web.Controllers
     public class UsersController : Controller
     {
         private readonly IUsersService _usersServices;
+        private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsersController(IUsersService usersServices, IHttpContextAccessor httpContextAccessor)
+        public UsersController(IUsersService usersServices, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _usersServices = usersServices;
+            _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -86,9 +89,12 @@ namespace mini_ITS.Web.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error123: {ex.Message}");
+                throw new Exception($"Error: {ex.Message}");
             }
         }
+
+
+
 
         [HttpDelete]
         public async Task<IActionResult> LogoutAsync()
@@ -103,6 +109,18 @@ namespace mini_ITS.Web.Controllers
             {
                 throw new Exception($"Error: {ex.Message}");
             }
+        }
+
+        [CookieAuth]
+        [Authorize("Admin")]
+        [HttpGet("Account/Index")]
+        public async Task<IActionResult> IndexAsync([FromBody] SqlPagedQuery<Users> sqlPagedQuery)
+        {
+            var result = await _usersServices.GetAsync(sqlPagedQuery);
+            var users = _mapper.Map<IEnumerable<Users>>(result.Results);
+            var sqlPagedResult = SqlPagedResult<Users>.From(result, users);
+
+            return Ok(sqlPagedResult);
         }
 
         [HttpGet]
