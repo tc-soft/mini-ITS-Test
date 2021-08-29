@@ -5,6 +5,17 @@ import { usersServices } from '../../services/UsersServices';
 
 function UsersList({ match }) {
     const { path } = match;
+    const [pagedQuery, setPagedQuery] = useState({
+        filter: [{
+            name: "Department",
+            operator: "=",
+            value: "Managers"
+        }],
+        sortColumnName: "Login",
+        sortDirection: "ASC",
+        page: 1,
+        resultsPerPage: 22
+    });
     const [users, setUsers] = useState({
         results: '',
         currentPage: '',
@@ -15,10 +26,20 @@ function UsersList({ match }) {
 
     useEffect(() => {
         setTimeout(() => {
-            usersServices.getAll()
-                .then(x => {
-                    setUsers(x);
-                });
+            usersServices.index(pagedQuery)
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json()
+                            .then((data) => {
+                                setUsers(data);
+                            })
+                    } else {
+                        return response.json()
+                            .then((data) => {
+                                console.log(data);
+                            })
+                    }
+            })
         }, 0);
     }, []);
 

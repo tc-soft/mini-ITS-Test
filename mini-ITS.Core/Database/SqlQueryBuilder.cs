@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 
 namespace mini_ITS.Core.Database
 {
@@ -50,6 +51,20 @@ namespace mini_ITS.Core.Database
 
                 foreach (var item in _filters)
                 {
+                    if (item.Value is not null && item.Value is JsonElement)
+                    {
+                        JsonElement value = (JsonElement)item.Value;
+                        if (value.ValueKind == JsonValueKind.String)
+                        {
+                            var re = value.ValueKind.ToString();
+                            var rt = value.ToString();
+                            var ty = value.GetString();
+                            var cv = value.ToString().Substring(1, value.ToString().Length - 2);
+
+                            filters.Add($"{item.Name} {item.Operator} '{ty}'");
+                        }
+                    }
+
                     if (item.Value is not null && item.Value is string && !String.IsNullOrWhiteSpace((string)item.Value))
                     {
                         filters.Add($"{item.Name} {item.Operator} '{item.Value}'");
@@ -146,6 +161,20 @@ namespace mini_ITS.Core.Database
 
                 foreach (var item in _filters)
                 {
+                    if (item.Value is not null && item.Value is JsonElement)
+                    {
+                        JsonElement value = (JsonElement)item.Value;
+                        if (value.ValueKind == JsonValueKind.String)
+                        {
+                            var re = value.ValueKind.ToString();
+                            var rt = value.ToString();
+                            var ty = value.GetString();
+                            var cv = value.ToString().Substring(1, value.ToString().Length - 2);
+
+                            filters.Add($"{item.Name} {item.Operator} '{ty}'");
+                        }
+                    }
+
                     if (item.Value is not null && item.Value is string && !String.IsNullOrWhiteSpace((string)item.Value))
                     {
                         filters.Add($"{item.Name} {item.Operator} '{item.Value}'");

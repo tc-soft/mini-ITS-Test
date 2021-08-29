@@ -8,11 +8,13 @@ export const fetchWrapper = {
     logout
 }
 
-function get(url) {
+function get(url, params) {
+    const urlParams = encodeQueryString(params);
     const requestOptions = {
-        method: 'GET'
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
     };
-    return fetch(url, requestOptions).then(handleResponse);
+    return fetch(`${url}${urlParams}`, requestOptions);
 }
 
 function post(url, body) {
@@ -21,7 +23,7 @@ function post(url, body) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     };
-    return fetch(url, requestOptions).then(handleResponse);
+    return fetch(url, requestOptions);
 }
 
 function put(url, body) {
@@ -83,8 +85,18 @@ function handleResponse(response) {
             return responseData;
         })
         .catch(error => {
-                //console.warn(error);
-                //Promise.reject(error);
+                console.warn(error);
+                Promise.reject(error);
             }
         );
+}
+
+function encodeQueryString(params) {
+    const keys = Object.keys(params)
+    return keys.length
+        ? "?" + keys
+            .map(key => encodeURIComponent(key)
+                + "=" + encodeURIComponent(params[key]))
+            .join("&")
+        : ""
 }

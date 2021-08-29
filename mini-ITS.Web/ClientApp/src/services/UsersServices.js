@@ -3,7 +3,7 @@ import { fetchWrapper } from '../api/FetchWrapper';
 const baseUrl = '/Users';
 
 export const usersServices = {
-    getAll,
+    index,
     getById,
     create,
     update,
@@ -13,24 +13,24 @@ export const usersServices = {
     logout
 };
 
-function getAll() {
-    return fetchWrapper.get(`${baseUrl}/GetAll`);
+function index(params) {
+    return fetchWrapper.post(`${baseUrl}/Index`, params);
 }
 
 function getById(id) {
-    return fetchWrapper.Get(`${baseUrl}/${id}`);
+    return fetchWrapper.get(`${baseUrl}/${id}`);
 }
 
 function create(params) {
-    return fetchWrapper.Post(baseUrl, params);
+    return fetchWrapper.post(`${baseUrl}/Create`, params);
 }
 
 function update(id, params) {
-    return fetchWrapper.Put(`${baseUrl}/${id}`, params);
+    return fetchWrapper.put(`${baseUrl}/${id}`, params);
 }
 
 function _delete(id) {
-    return fetchWrapper.Delete(`${baseUrl}/${id}`);
+    return fetchWrapper.delete(`${baseUrl}/${id}`);
 }
 
 function login(login, password) {

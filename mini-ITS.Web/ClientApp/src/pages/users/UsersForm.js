@@ -21,8 +21,8 @@ function UsersForm({ history, match }) {
                     email: '',
                     phone: '',
                     role: '',
-                    password: '',
-                    confirmPassword: ''
+                    passwordHash: '',
+                    confirmPasswordHash: ''
                 }}
 
                 validationSchema={Yup.object({
@@ -41,16 +41,16 @@ function UsersForm({ history, match }) {
                         .required('Telefon użytkownika jest wymagany'),
                     role: Yup.string()
                         .required('Rola użytkownika jest wymagana'),
-                    password: Yup.string()
+                    passwordHash: Yup.string()
                         .transform(x => x === '' ? undefined : x)
                         .concat(isAddMode ? Yup.string().required('Hasło jest wymagane') : null)
                         .min(6, 'Hasło musi mieć minimum 6 znaków'),
-                    confirmPassword: Yup.string()
+                    confirmPasswordHash: Yup.string()
                         .transform(x => x === '' ? undefined : x)
-                        .when('password', (password, schema) => {
+                        .when('passwordHash', (password, schema) => {
                             if (password || isAddMode) return schema.required('Potwierdzenie hasła jest wymagane');
                         })
-                        .oneOf([Yup.ref('password')], 'Hasła nie są takie same')
+                        .oneOf([Yup.ref('passwordHash')], 'Hasła nie są takie same')
                 })}
 
                 onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -59,23 +59,20 @@ function UsersForm({ history, match }) {
                         if (response.ok) {
                             return response.json()
                                 .then((data) => {
-                                    alert(values);
                                     resetForm();
                                 })
                         } else {
-                            return response.json()
+                            return response.text()
                                 .then((data) => {
+                                    //tu dodać rsjx event
+                                    alert(data);
                                     setSubmitting(false);
-                                    resetForm();
                                 })
                         }
                     })
-                    .catch((error) => {
-                        setTimeout(() => {
-                            console.error('Error:', error);
-                            alert(error);
-                            setSubmitting(false);
-                        }, 200);
+                    .catch(error => {
+                        console.error('Error: ', error);
+                        setSubmitting(false);
                     });
                 }}
             >
@@ -93,82 +90,86 @@ function UsersForm({ history, match }) {
                         />
                         <ErrorMessage errors={errors.login} touched={touched.login} values={values.login} />
 
-                        <label htmlFor="firstName">Imię</label><br />
+                        <div>
+                            <label htmlFor="firstName">Imię</label><br />
+                            <Field
+                                name="firstName"
+                                type="text"
+                                placeholder="Wpisz imię"
+                                className={errors.firstName && (touched.firstName || values.firstName) && "contact__ValidationError"}
+                            />
+                            <ErrorMessage errors={errors.firstName} touched={touched.firstName} values={values.firstName} />
+
+                            <label htmlFor="lastName">Nazwisko</label><br />
+                            <Field
+                                name="lastName"
+                                type="text"
+                                placeholder="Wpisz nazwisko"
+                                className={errors.lastName && (touched.lastName || values.lastName) && "contact__ValidationError"}
+                            />
+                            <ErrorMessage errors={errors.lastName} touched={touched.lastName} values={values.lastName} />
+
+                            <label htmlFor="department">Dział</label><br />
+                            <Field name="department" as="select"
+                                className={errors.department && (touched.department || values.department) && "contact__ValidationError"}
+                            >
+                                <option value=""></option>
+                                <option value="Produkcja">Produkcja</option>
+                                <option value="Dział Techniczny">Dział Techniczny</option>
+                                <option value="IT">IT</option>
+                            </Field>
+                            <ErrorMessage errors={errors.department} touched={touched.department} values={values.department} />
+                        </div>
+
+                        <div>
+                            <label htmlFor="email">Email</label><br />
+                            <Field
+                                name="email"
+                                type="text"
+                                placeholder="Wpisz email"
+                                className={errors.email && (touched.email || values.email) && "contact__ValidationError"}
+                            />
+                            <ErrorMessage errors={errors.email} touched={touched.email} values={values.email} />
+
+
+                            <label htmlFor="phone">Telefon</label><br />
+                            <Field
+                                name="phone"
+                                type="text"
+                                placeholder="Wpisz telefon"
+                                className={errors.phone && (touched.phone || values.phone) && "contact__ValidationError"}
+                            />
+                            <ErrorMessage errors={errors.phone} touched={touched.phone} values={values.phone} />
+
+                            <label htmlFor="role">Rola</label><br />
+                            <Field name="role" as="select"
+                                className={errors.role && (touched.role || values.role) && "contact__ValidationError"}
+                            >
+                                <option value=""></option>
+                                <option value="Użytkownik">Użytkownik</option>
+                                <option value="Kierownik">Kierownik</option>
+                                <option value="Administrator">Administrator</option>
+                            </Field>
+                            <ErrorMessage errors={errors.role} touched={touched.role} values={values.role} />
+                        </div>
+
+                        <label htmlFor="passwordHash">Hasło</label><br />
                         <Field
-                            name="firstName"
-                            type="text"
-                            placeholder="Wpisz imię"
-                            className={errors.firstName && (touched.firstName || values.firstName) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.firstName} touched={touched.firstName} values={values.firstName} />
-
-                        <label htmlFor="lastName">Nazwisko</label><br />
-                        <Field
-                            name="lastName"
-                            type="text"
-                            placeholder="Wpisz nazwisko"
-                            className={errors.lastName && (touched.lastName || values.lastName) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.lastName} touched={touched.lastName} values={values.lastName} />
-
-                        <label htmlFor="department">Dział</label><br />
-                        <Field name="department" as="select"
-                            className={errors.department && (touched.department || values.department) && "contact__ValidationError"}
-                        >
-                            <option value=""></option>
-                            <option value="Produkcja">Produkcja</option>
-                            <option value="Dział Techniczny">Dział Techniczny</option>
-                            <option value="IT">IT</option>
-                        </Field>
-                        <ErrorMessage errors={errors.department} touched={touched.department} values={values.department} />
-
-                        <label htmlFor="email">Email</label><br />
-                        <Field
-                            name="email"
-                            type="text"
-                            placeholder="Wpisz email"
-                            className={errors.email && (touched.email || values.email) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.email} touched={touched.email} values={values.email} />
-
-
-                        <label htmlFor="phone">Telefon</label><br />
-                        <Field
-                            name="phone"
-                            type="text"
-                            placeholder="Wpisz telefon"
-                            className={errors.phone && (touched.phone || values.phone) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.phone} touched={touched.phone} values={values.phone} />
-
-                        <label htmlFor="role">Rola</label><br />
-                        <Field name="role" as="select"
-                            className={errors.role && (touched.role || values.role) && "contact__ValidationError"}
-                        >
-                            <option value=""></option>
-                            <option value="Użytkownik">Użytkownik</option>
-                            <option value="Kierownik">Kierownik</option>
-                            <option value="Administrator">Administrator</option>
-                        </Field>
-                        <ErrorMessage errors={errors.role} touched={touched.role} values={values.role} />
-
-                        <label htmlFor="password">Hasło</label><br />
-                        <Field
-                            name="password"
+                            name="passwordHash"
                             type="password"
                             placeholder="Wpisz hasło"
-                            className={errors.password && (touched.password || values.password) && "contact__ValidationError"}
+                            className={errors.passwordHash && (touched.passwordHash || values.passwordHash) && "contact__ValidationError"}
                         />
-                        <ErrorMessage errors={errors.password} touched={touched.password} values={values.password} />
+                        <ErrorMessage errors={errors.passwordHash} touched={touched.passwordHash} values={values.passwordHash} />
 
-                        <label htmlFor="confirmPassword">Hasło</label><br />
+                        <label htmlFor="confirmPasswordHash">Hasło</label><br />
                         <Field
-                            name="confirmPassword"
+                            name="confirmPasswordHash"
                             type="password"
                             placeholder="Wpisz hasło"
-                            className={errors.confirmPassword && (touched.confirmPassword || values.confirmPassword) && "contact__ValidationError"}
+                            className={errors.confirmPasswordHash && (touched.confirmPasswordHash || values.confirmPasswordHash) && "contact__ValidationError"}
                         />
-                        <ErrorMessage errors={errors.confirmPassword} touched={touched.confirmPassword} values={values.confirmPassword} />
+                        <ErrorMessage errors={errors.confirmPasswordHash} touched={touched.confirmPasswordHash} values={values.confirmPasswordHash} />
 
 
                         <div className="contact__buttons">

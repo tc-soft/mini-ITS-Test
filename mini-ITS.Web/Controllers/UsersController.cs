@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using mini_ITS.Core.Database;
+using mini_ITS.Core.Dto;
 using mini_ITS.Core.Models;
 using mini_ITS.Core.Services;
 using mini_ITS.Web.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -31,6 +30,7 @@ namespace mini_ITS.Web.Controllers
 
         [HttpPost]
         //[ValidateAntiForgeryToken]
+        //[AutoValidateAntiforgeryToken]
         public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData)
         {
             try
@@ -60,7 +60,7 @@ namespace mini_ITS.Web.Controllers
                 }
                 else
                 {
-                    return StatusCode(401, "Aaaajjjjjj, Login or Password is incorrect");
+                    return StatusCode(401, "Login or password is incorrect");
                 }
             }
             catch (Exception ex)
@@ -93,16 +93,13 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-
-
-
         [HttpDelete]
+        [CookieAuth]
         public async Task<IActionResult> LogoutAsync()
         {
             try
             {
                 await HttpContext.SignOutAsync();
-                //return Content("Wylogowanie użytkownika...");
                 return StatusCode(200, "Wylogowano...");
             }
             catch (Exception ex)
@@ -111,21 +108,45 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
+        [HttpPost]
         [CookieAuth]
-        [Authorize("Admin")]
-        [HttpGet("Account/Index")]
+        //[Authorize("Admin")]
         public async Task<IActionResult> IndexAsync([FromBody] SqlPagedQuery<Users> sqlPagedQuery)
         {
-            var result = await _usersServices.GetAsync(sqlPagedQuery);
-            var users = _mapper.Map<IEnumerable<Users>>(result.Results);
-            var sqlPagedResult = SqlPagedResult<Users>.From(result, users);
+            try
+            {
+                var result = await _usersServices.GetAsync(sqlPagedQuery);
+                var users = _mapper.Map<IEnumerable<Users>>(result.Results);
+                var sqlPagedResult = SqlPagedResult<Users>.From(result, users);
 
-            return Ok(sqlPagedResult);
+                return Ok(sqlPagedResult);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
+        // POST: UsersController/Create
+        [HttpPost]
+        public async Task<ActionResult> Create([FromBody] Users user)
+        {
+            try
+            {
+                var userDto = _mapper.Map<UsersDto>(user);
+                await _usersServices.CreateAsync(userDto);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(303, $"Error: {ex.Message}");
+            }
         }
 
         [HttpGet]
         [CookieAuth]
-        [Authorize("Admin")]
+        //[Authorize("Admin")]
         public async Task<IActionResult> GetAllAsync()
         {
             var myFilter = new List<SqlQueryCondition>()
@@ -185,27 +206,6 @@ namespace mini_ITS.Web.Controllers
         public ActionResult Details(int id)
         {
             return Content("Details....");
-        }
-
-        // GET: UsersController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: UsersController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
 
         // GET: UsersController/Edit/5
