@@ -10,7 +10,7 @@ function Users({ match }) {
     return (
         <Switch>
             <Route exact path={path} component={UsersList} />
-            <Route path={`${path}/add`} component={UsersForm} />
+            <Route path={`${path}/Create`} component={UsersForm} />
             {/*<Route path={`${path}/edit/:id`} component={AddEdit} />*/}
         </Switch>
     );

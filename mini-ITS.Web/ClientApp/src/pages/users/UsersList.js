@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, setState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { usersServices } from '../../services/UsersServices';
@@ -9,12 +9,12 @@ function UsersList({ match }) {
         filter: [{
             name: "Department",
             operator: "=",
-            value: "Managers"
+            value: "Sales"
         }],
         sortColumnName: "Login",
         sortDirection: "ASC",
         page: 1,
-        resultsPerPage: 22
+        resultsPerPage: 10
     });
     const [users, setUsers] = useState({
         results: '',
@@ -44,27 +44,89 @@ function UsersList({ match }) {
     }, []);
 
     function deleteUser(id) {
-        setUsers(users.map(x => {
-            if (x.id === id) { x.isDeleting = true; }
-            return x;
-        }));
-        usersServices.delete(id).then(() => {
-            setUsers(users => users.filter(x => x.id !== id));
+        var answer = window.confirm("Kasować użytkownika ?");
+        if (answer) {
+            setUsers({
+                results: users.results.map(x => {
+                    if (x.id === id) { x.isDeleting = true; }
+                    return x
+                }),
+                currentPage: users.currentPage,
+                resultsPerPage: users.resultsPerPage,
+                totalResults: users.totalResults,
+                totalPages: users.totalPages
+            });
+
+            usersServices.delete(id)
+            .then(() => {
+                setUsers({
+                    results: users.results.filter(x => x.id !== id),
+                    currentPage: users.currentPage,
+                    resultsPerPage: users.resultsPerPage,
+                    totalResults: users.totalResults,
+                    totalPages: users.totalPages
+                });
+            });
+        }
+    }
+
+    function handleNextPage() {
+
+        //var someProperty = { ...pagedQuery }
+        //someProperty.page = someProperty.page + 1;
+        //setPagedQuery({ someProperty })
+
+        //setPagedQuery({
+        //    page: pagedQuery.page + 1,
+        //});
+
+        //setPagedQuery((preState) => {
+        //    return {
+        //        page: preState.page + 1
+        //    };
+        //});
+    
+
+        setPagedQuery({
+            filter: pagedQuery.filter,
+            sortColumnName: pagedQuery.sortColumnName,
+            sortDirection: pagedQuery.sortDirection,
+            page: pagedQuery.page + 1,
+            resultsPerPage: pagedQuery.resultsPerPage
         });
+
+        setTimeout(() => {
+            usersServices.index(pagedQuery)
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json()
+                            .then((data) => {
+                                setUsers(data);
+                            })
+                    } else {
+                        return response.json()
+                            .then((data) => {
+                                console.log(data);
+                            })
+                    }
+                })
+        }, 0);
+
+
     }
 
     return (
-        <div>
+        <React.Fragment>
             <h1>Users</h1>
-            <Link to={`${path}/add`}>Dodaj</Link>
+            <Link to={`${path}/Create`}>Dodaj</Link>
             <table>
                 <thead>
                     <tr>
                         <th style={{ width: '05%' }}>Lp.</th>
-                        <th style={{ width: '10%' }}>Login</th>
+                        <th style={{ width: '20%' }}>Login</th>
                         <th style={{ width: '20%' }}>Imie</th>
                         <th style={{ width: '20%' }}>Nazwisko</th>
-                        <th style={{ width: '20%' }}>Dział</th>
+                        <th style={{ width: '10%' }}>Dział</th>
                         <th style={{ width: '10%' }}>Rola</th>
                         <th style={{ width: '15%' }}></th>
                     </tr>
@@ -108,7 +170,16 @@ function UsersList({ match }) {
                     }
                 </tbody>
             </table>
-        </div>
+            <br/>
+            <div>
+                <p>Strona z odczytu: {users.currentPage}</p>
+                <p>Strona z query: {pagedQuery.page}</p>
+                <button onClick={() => { handleNextPage() }}>
+                    Następna strona
+                </button>
+
+            </div>
+        </React.Fragment>
     );
 }
 

@@ -30,7 +30,7 @@ function update(id, params) {
 }
 
 function _delete(id) {
-    return fetchWrapper.delete(`${baseUrl}/${id}`);
+    return fetchWrapper.delete(`${baseUrl}/Delete/${id}`);
 }
 
 function login(login, password) {

@@ -57,10 +57,8 @@ function UsersForm({ history, match }) {
                     usersServices.create(values)
                     .then((response) => {
                         if (response.ok) {
-                            return response.json()
-                                .then((data) => {
-                                    resetForm();
-                                })
+                            resetForm();
+                            history.push("/Users");
                         } else {
                             return response.text()
                                 .then((data) => {
@@ -114,6 +112,7 @@ function UsersForm({ history, match }) {
                                 className={errors.department && (touched.department || values.department) && "contact__ValidationError"}
                             >
                                 <option value=""></option>
+                                <option value="Managers">Managersi</option>
                                 <option value="Produkcja">Produkcja</option>
                                 <option value="Dział Techniczny">Dział Techniczny</option>
                                 <option value="IT">IT</option>
@@ -146,8 +145,8 @@ function UsersForm({ history, match }) {
                                 className={errors.role && (touched.role || values.role) && "contact__ValidationError"}
                             >
                                 <option value=""></option>
-                                <option value="Użytkownik">Użytkownik</option>
-                                <option value="Kierownik">Kierownik</option>
+                                <option value="User">Użytkownik</option>
+                                <option value="Manager">Kierownik</option>
                                 <option value="Administrator">Administrator</option>
                             </Field>
                             <ErrorMessage errors={errors.role} touched={touched.role} values={values.role} />

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using mini_ITS.Core.Database;
@@ -110,7 +111,7 @@ namespace mini_ITS.Web.Controllers
 
         [HttpPost]
         [CookieAuth]
-        //[Authorize("Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> IndexAsync([FromBody] SqlPagedQuery<Users> sqlPagedQuery)
         {
             try
@@ -127,14 +128,13 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-        // POST: UsersController/Create
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Users user)
+        public async Task<ActionResult> Create([FromBody] Users users)
         {
             try
             {
-                var userDto = _mapper.Map<UsersDto>(user);
-                await _usersServices.CreateAsync(userDto);
+                var usersDto = _mapper.Map<UsersDto>(users);
+                await _usersServices.CreateAsync(usersDto);
 
                 return Ok();
             }
@@ -144,65 +144,29 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpDelete("Users/Delete/{id:guid}")]
         [CookieAuth]
-        //[Authorize("Admin")]
-        public async Task<IActionResult> GetAllAsync()
+        [Authorize("Admin")]
+        public async Task<IActionResult> DeleteAsync(Guid? id)
         {
-            var myFilter = new List<SqlQueryCondition>()
+            try
             {
-                new SqlQueryCondition
+                if (id.HasValue)
                 {
-                    Name = "Role",
-                    Operator = SqlQueryOperator.Equal,
-                    Value = null
-                    //Value = new string("")
-                },
-                new SqlQueryCondition
-                {
-                    Name = "Department",
-                    Operator = SqlQueryOperator.Equal,
-                    Value = null
-                    //Value = new string("Managers")
+                    await _usersServices.DeleteAsync((Guid)id);
+                    return Ok();
                 }
-            };
-
-            //var result = await _usersRepository.GetAsync(myFilter);
-
-            var result = await _usersServices.GetAsync(new SqlPagedQuery<Users>
+                else
+                {
+                    return StatusCode(500, $"Error: id is null");
+                }
+            }
+            catch (Exception ex)
             {
-                Filter = myFilter,
-                SortColumnName = "Login",
-                SortDirection = "ASC",
-                Page = 1,
-                ResultsPerPage = 20
-            });
-
-            Guid guid = new Guid("e5daa03f-8dfa-4d1a-87b1-22d971f9654c");
-
-            var user = new Users
-            {
-                Id = guid,
-                Login = "ciszetad",
-                FirstName = "Tadeuszo",
-                LastName = "Ciszewskim",
-                Department = "IT",
-                Email = "office@tc-soft.pl",
-                Phone = "502600121",
-                Role = "Kierownik",
-                PasswordHash = "dstgxstgvpir"
-            };
-
-            //await _usersService.SetPasswordAsync("atkincol", "NoweHgbvufnvuasło123#");
-
-            //await _usersService.SetPasswordAsync("ciszetad", "portki200$");
-            //await _usersRepository.DeleteAsync(guid);
-            //var result = await _usersService.GetAsync();
-
-            return Ok(result);
+                return StatusCode(303, $"Error: {ex.Message}");
+            }
         }
-        
-        // GET: UsersController/Details/5
+
         public ActionResult Details(int id)
         {
             return Content("Details....");
@@ -229,11 +193,6 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-        // GET: UsersController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
         // POST: UsersController/Delete/5
         [HttpPost]
