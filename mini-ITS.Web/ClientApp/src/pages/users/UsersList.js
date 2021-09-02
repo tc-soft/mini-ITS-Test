@@ -14,7 +14,7 @@ function UsersList({ match }) {
         sortColumnName: "Login",
         sortDirection: "ASC",
         page: 1,
-        resultsPerPage: 10
+        resultsPerPage: 5
     });
     const [users, setUsers] = useState({
         results: '',
@@ -23,6 +23,7 @@ function UsersList({ match }) {
         totalResults: '',
         totalPages: ''
     });
+    const [activeDepartmentFilter, setActiveDepartmentFilter] = useState("")
 
     useEffect(() => {
         setTimeout(() => {
@@ -39,9 +40,9 @@ function UsersList({ match }) {
                                 console.log(data);
                             })
                     }
-            })
+                })
         }, 0);
-    }, []);
+    }, [pagedQuery]);
 
     function deleteUser(id) {
         var answer = window.confirm("Kasować użytkownika ?");
@@ -58,65 +59,84 @@ function UsersList({ match }) {
             });
 
             usersServices.delete(id)
-            .then(() => {
-                setUsers({
-                    results: users.results.filter(x => x.id !== id),
-                    currentPage: users.currentPage,
-                    resultsPerPage: users.resultsPerPage,
-                    totalResults: users.totalResults,
-                    totalPages: users.totalPages
+                .then(() => {
+                    setUsers({
+                        results: users.results.filter(x => x.id !== id),
+                        currentPage: users.currentPage,
+                        resultsPerPage: users.resultsPerPage,
+                        totalResults: users.totalResults,
+                        totalPages: users.totalPages
+                    });
                 });
-            });
         }
     }
 
+    function handleDepartmentFilter(department) {
+        setPagedQuery(prevState => ({
+            ...prevState,
+            filter: [{
+                name: "Department",
+                operator: "=",
+                value: department
+            }],
+            page: 1
+        }));
+
+        setActiveDepartmentFilter(department);
+    }
+
+    function handleFirstPage() {
+        setPagedQuery(prevState => ({
+            ...prevState,
+            page: 1
+        }));
+    }
+
+    function handlePrevPage() {
+        var prevPage = users.currentPage;
+        if (users.currentPage > 1) {
+            prevPage--;
+        }
+
+        setPagedQuery(prevState => ({
+            ...prevState,
+            page: prevPage
+        }));
+    }
+
     function handleNextPage() {
+        var nextPage = users.currentPage;
+        if (users.currentPage < users.totalPages) {
+            nextPage++;
+        }
 
-        //var someProperty = { ...pagedQuery }
-        //someProperty.page = someProperty.page + 1;
-        //setPagedQuery({ someProperty })
+        setPagedQuery(prevState => ({
+            ...prevState,
+            page: nextPage
+        }));
+    }
 
-        //setPagedQuery({
-        //    page: pagedQuery.page + 1,
-        //});
-
-        //setPagedQuery((preState) => {
-        //    return {
-        //        page: preState.page + 1
-        //    };
-        //});
-    
-
-        setPagedQuery({
-            filter: pagedQuery.filter,
-            sortColumnName: pagedQuery.sortColumnName,
-            sortDirection: pagedQuery.sortDirection,
-            page: pagedQuery.page + 1,
-            resultsPerPage: pagedQuery.resultsPerPage
-        });
-
-        setTimeout(() => {
-            usersServices.index(pagedQuery)
-                .then((response) => {
-                    if (response.ok) {
-                        return response.json()
-                            .then((data) => {
-                                setUsers(data);
-                            })
-                    } else {
-                        return response.json()
-                            .then((data) => {
-                                console.log(data);
-                            })
-                    }
-                })
-        }, 0);
-
-
+    function handleLastPage() {
+        setPagedQuery(prevState => ({
+            ...prevState,
+            page: users.totalPages
+        }));
     }
 
     return (
         <React.Fragment>
+            <button
+                onClick={() => { handleDepartmentFilter("IT") }}
+                disabled={activeDepartmentFilter == "IT" ? true : false}
+            >
+                Filter: Department-IT;
+            </button>
+            <button
+                onClick={() => { handleDepartmentFilter("Sales") }}
+                disabled={activeDepartmentFilter == "Sales" ? true : false}
+            >
+                Filter: Department-Sales;
+            </button>
             <h1>Users</h1>
             <Link to={`${path}/Create`}>Dodaj</Link>
             <table>
@@ -174,8 +194,35 @@ function UsersList({ match }) {
             <div>
                 <p>Strona z odczytu: {users.currentPage}</p>
                 <p>Strona z query: {pagedQuery.page}</p>
-                <button onClick={() => { handleNextPage() }}>
-                    Następna strona
+                <p>Wszystkich stron: {users.totalPages}</p>
+
+                <button
+                    onClick={() => { handleFirstPage() }}
+                    disabled={users.currentPage <= 1 ? true : false}
+                >
+                    &#60;&#60;
+                </button>
+
+
+                <button
+                    onClick={() => { handlePrevPage() }}
+                    disabled={users.currentPage <= 1 ? true : false}
+                >
+                    &#60;
+                </button>
+
+                <button
+                    onClick={() => { handleNextPage() }}
+                    disabled={users.currentPage >= users.totalPages ? true : false}
+                >
+                    &#62;
+                </button>
+
+                <button
+                    onClick={() => { handleLastPage() }}
+                    disabled={users.currentPage >= users.totalPages ? true : false}
+                >
+                    &#62;&#62;
                 </button>
 
             </div>

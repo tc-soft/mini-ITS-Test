@@ -129,7 +129,7 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Users users)
+        public async Task<ActionResult> CreateAsync([FromBody] Users users)
         {
             try
             {
@@ -167,54 +167,11 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-        public ActionResult Details(int id)
-        {
-            return Content("Details....");
-        }
-
-        // GET: UsersController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: UsersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-
-        // POST: UsersController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
         [CookieAuth]
         public IActionResult Forbidden()
         {
             return Content("Eeeejjj, masz brak uprawnień...");
         }
-
 
 
         public class LoginData

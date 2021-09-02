@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { usersServices } from '../../services/UsersServices';
@@ -171,8 +172,16 @@ function UsersForm({ history, match }) {
                         <ErrorMessage errors={errors.confirmPasswordHash} touched={touched.confirmPasswordHash} values={values.confirmPasswordHash} />
 
 
-                        <div className="contact__buttons">
+                        <div className="">
                             <button type="submit" className="buttonSend" disabled={!(isValid && dirty)}>Zapisz</button>
+                            
+                            <NavLink exact to="." className="nav-item nav-link">
+                                <button type="button">
+                                    Anuluj2
+                                </button>
+                            </NavLink>
+
+
                         </div>
                     </Form>
                 )}
