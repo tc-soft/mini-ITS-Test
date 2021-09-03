@@ -17,11 +17,11 @@ function UsersList({ match }) {
         resultsPerPage: 5
     });
     const [users, setUsers] = useState({
-        results: '',
-        currentPage: '',
-        resultsPerPage: '',
-        totalResults: '',
-        totalPages: ''
+        results: null,
+        currentPage: null,
+        resultsPerPage: null,
+        totalResults: null,
+        totalPages: null
     });
     const [activeDepartmentFilter, setActiveDepartmentFilter] = useState("")
 
@@ -153,7 +153,7 @@ function UsersList({ match }) {
                 </thead>
                 <tbody>
                     {users.results && users.results.map((user, index) =>
-                        <tr key={user.login}>
+                        <tr key={index}>
                             <td>{String("0" + index).slice(-2)}</td>
                             <td>{user.login}</td>
                             <td>{user.firstName}</td>
@@ -174,6 +174,7 @@ function UsersList({ match }) {
                             </td>
                         </tr>
                     )}
+
                     {!users.results &&
                         <tr>
                             <td>
