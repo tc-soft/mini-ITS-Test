@@ -13,29 +13,31 @@ export default function AuthProvider({ children }) {
     const [loginStatus, setLoginStatus] = useState(false);
     const history = useHistory();
 
-
     if (!currentUser && !loginStatus) {
-        setLoginStatus(true);
-
-        if (window.performance) {
-            if (performance.navigation.type === 1) {
-                //This page is reloaded
-                usersServices.loginStatus()
-                    .then((response) => {
-                        if (response.ok) {
-                            return response.json()
-                                .then((data) => {
-                                    console.log("currentUser : check login status");
-                                    setCurrentUser(data);
-                                })
-                        }
-                    });
-            } else {
-                //This page is not reloaded
-                console.log("currentUser : check login status - not reloaded");
-            }
-        }
+        usersServices.loginStatus()
+            .then((response) => {
+                if (response.ok) {
+                    return response.json()
+                        .then((data) => {
+                            console.log("currentUser : check login status");
+                            setCurrentUser(data);
+                            setLoginStatus(true);
+                        })
+                }
+            });
     }
+
+    //if (!currentUser && !loginStatus) {
+    //    setLoginStatus(true);
+    //    if (window.performance) {
+    //        if (performance.navigation.type === 1) {
+    //            //This page is reloaded
+    //        } else {
+    //            //This page is not reloaded
+    //            console.log("currentUser : check login status - not reloaded");
+    //        }
+    //    }
+    //}
 
     console.log(`currentUser : ${currentUser}, loginStatus : ${loginStatus}`);
 

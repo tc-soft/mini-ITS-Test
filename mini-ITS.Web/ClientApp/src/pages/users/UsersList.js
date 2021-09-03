@@ -1,4 +1,4 @@
-import React, { useState, setState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { usersServices } from '../../services/UsersServices';
@@ -127,13 +127,13 @@ function UsersList({ match }) {
         <React.Fragment>
             <button
                 onClick={() => { handleDepartmentFilter("IT") }}
-                disabled={activeDepartmentFilter == "IT" ? true : false}
+                disabled={activeDepartmentFilter === "IT" ? true : false}
             >
                 Filter: Department-IT;
             </button>
             <button
                 onClick={() => { handleDepartmentFilter("Sales") }}
-                disabled={activeDepartmentFilter == "Sales" ? true : false}
+                disabled={activeDepartmentFilter === "Sales" ? true : false}
             >
                 Filter: Department-Sales;
             </button>
