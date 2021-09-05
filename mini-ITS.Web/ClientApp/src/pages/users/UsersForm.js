@@ -11,20 +11,19 @@ function UsersForm({ history, match }) {
     const { id } = match.params;
     const isAddMode = !id;
 
-    const [userM, setUserM] = useState(false);
-        //id: null,
-        //login: null,
-        //firstName: null,
-        //lastName: null,
-        //department: null,
-        //email: null,
-        //phone: null,
-        //role: null,
-        //passwordHash: null,
-        //confirmPasswordHash: null
-    
+    const [userM, setUserM] = useState({
+        login: null,
+        firstName: null,
+        lastName: null,
+        department: null,
+        email: null,
+        phone: null,
+        role: null,
+        passwordHash: null,
+        confirmPasswordHash: null
+    });
 
-    function handleData() {
+    useEffect(() => {
         if (id) {
             setTimeout(() => {
                 usersServices.edit(id)
@@ -43,15 +42,13 @@ function UsersForm({ history, match }) {
                     })
             }, 0);
         }
-        //return userM;
-    };
-
-    handleData();
+    });
 
     return (
         <React.Fragment>
             <Formik
-                initialValues={{ userM }}
+                enableReinitialize={true}
+                initialValues={ userM }
                 validationSchema={Yup.object({
                     login: Yup.string()
                         .required('Login użytkownika jest wymagana'),

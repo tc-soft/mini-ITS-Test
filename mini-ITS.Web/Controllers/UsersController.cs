@@ -154,21 +154,21 @@ namespace mini_ITS.Web.Controllers
                 var user = await _usersServices.GetAsync((Guid)id);
                 //var userDto = _mapper.Map<<Users>>(user);
 
-                //return Ok(user);
+                //return new JsonResult(new
+                //{
+                //    id = user.Id,
+                //    login = user.Login,
+                //    firstName = user.FirstName,
+                //    lastName = user.LastName,
+                //    department = user.Department,
+                //    email = user.Email,
+                //    phone = user.Phone,
+                //    role = user.Role,
+                //    passwordHash = user.PasswordHash,
+                //    confirmPasswordHash = user.PasswordHash
+                //});
 
-                return new JsonResult(new
-                {
-                    id = user.Id,
-                    login = user.Login,
-                    firstName = user.FirstName,
-                    lastName = user.LastName,
-                    department = user.Department,
-                    email = user.Email,
-                    phone = user.Phone,
-                    role = user.Role,
-                    passwordHash = user.PasswordHash,
-                    confirmPasswordHash = user.PasswordHash
-                });
+                return Ok(user);
             }
             catch (Exception ex)
             {
