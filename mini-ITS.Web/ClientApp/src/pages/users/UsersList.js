@@ -3,19 +3,16 @@ import { Link } from 'react-router-dom';
 
 import { usersServices } from '../../services/UsersServices';
 
-function UsersList({ match }) {
-    const { path } = match;
-    const [pagedQuery, setPagedQuery] = useState({
-        filter: [{
-            name: "Department",
-            operator: "=",
-            value: "Sales"
-        }],
-        sortColumnName: "Login",
-        sortDirection: "ASC",
-        page: 1,
-        resultsPerPage: 5
-    });
+function UsersList(props) {
+    const { match,
+        pagedQuery,
+        setPagedQuery,
+        activeDepartmentFilter,
+        setActiveDepartmentFilter,
+        activeRoleFilter,
+        setActiveRoleFilter
+    } = props;
+
     const [users, setUsers] = useState({
         results: null,
         currentPage: null,
@@ -23,8 +20,7 @@ function UsersList({ match }) {
         totalResults: null,
         totalPages: null
     });
-    const [activeDepartmentFilter, setActiveDepartmentFilter] = useState("")
-
+    
     useEffect(() => {
         setTimeout(() => {
             usersServices.index(pagedQuery)
@@ -42,33 +38,49 @@ function UsersList({ match }) {
                     }
                 })
         }, 0);
-    }, [pagedQuery]);
+    }, [pagedQuery, activeDepartmentFilter, activeRoleFilter]);
 
-    function deleteUser(id) {
-        var answer = window.confirm("Kasować użytkownika ?");
+    function deleteUser(id, login) {
+        var answer = window.confirm(`Kasować użytkownika ${login} ?`);
+
         if (answer) {
-            setUsers({
+            setUsers(prevState => ({
+                ...prevState,
                 results: users.results.map(x => {
                     if (x.id === id) { x.isDeleting = true; }
                     return x
-                }),
-                currentPage: users.currentPage,
-                resultsPerPage: users.resultsPerPage,
-                totalResults: users.totalResults,
-                totalPages: users.totalPages
-            });
+                })
+            }));
 
             usersServices.delete(id)
-                .then(() => {
-                    setUsers({
-                        results: users.results.filter(x => x.id !== id),
-                        currentPage: users.currentPage,
-                        resultsPerPage: users.resultsPerPage,
-                        totalResults: users.totalResults,
-                        totalPages: users.totalPages
-                    });
+                .then((response) => {
+                    if (response.ok) {
+                        setPagedQuery({
+                            ...pagedQuery
+                        });
+                    } else {
+                        return response.text()
+                            .then((data) => {
+                                //tu dodać rsjx event
+                                alert(data);
+                            })
+                    }
+                })
+                .catch(error => {
+                    console.error('Error: ', error);
                 });
         }
+    }
+
+    function handleResetFilter() {
+        setPagedQuery(prevState => ({
+            ...prevState,
+            filter: null,
+            page: 1
+        }));
+
+        setActiveDepartmentFilter(null);
+        setActiveRoleFilter(null);
     }
 
     function handleDepartmentFilter(department) {
@@ -83,6 +95,20 @@ function UsersList({ match }) {
         }));
 
         setActiveDepartmentFilter(department);
+    }
+
+    function handleRoleFilter(role) {
+        setPagedQuery(prevState => ({
+            ...prevState,
+            filter: [{
+                name: "Role",
+                operator: "=",
+                value: role
+            }],
+            page: 1
+        }));
+
+        setActiveRoleFilter(role);
     }
 
     function handleFirstPage() {
@@ -129,16 +155,27 @@ function UsersList({ match }) {
                 onClick={() => { handleDepartmentFilter("IT") }}
                 disabled={activeDepartmentFilter === "IT" ? true : false}
             >
-                Filter: Department-IT;
+                Department: IT
             </button>
             <button
                 onClick={() => { handleDepartmentFilter("Sales") }}
                 disabled={activeDepartmentFilter === "Sales" ? true : false}
             >
-                Filter: Department-Sales;
+                Department: Sales
+            </button>
+            <button
+                onClick={() => { handleRoleFilter("User") }}
+                disabled={activeRoleFilter === "User" ? true : false}
+            >
+                Role: User
+            </button>
+            <button
+                onClick={() => { handleResetFilter() }}
+            >
+                Filter: RESET
             </button>
             <h1>Users</h1>
-            <Link to={`${path}/Create`}>Dodaj</Link>
+            <Link to={`${match.path}/Create`}>Dodaj</Link>
             <table>
                 <thead>
                     <tr>
@@ -152,27 +189,28 @@ function UsersList({ match }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.results && users.results.map((user, index) =>
-                        <tr key={index}>
-                            <td>{String("0" + index).slice(-2)}</td>
-                            <td>{user.login}</td>
-                            <td>{user.firstName}</td>
-                            <td>{user.lastName}</td>
-                            <td>{user.department}</td>
-                            <td>{user.role}</td>
-                            <td>
-                                <button>
-                                    <Link to={`${path}/edit/${user.id}`}>Edit</Link>
-                                </button>
-                                
-                                <button onClick={() => deleteUser(user.id)} disabled={user.isDeleting}>
-                                    {user.isDeleting
-                                        ? <span></span>
-                                        : <span>Delete</span>
-                                    }
-                                </button>
-                            </td>
-                        </tr>
+                    {users.results && users.results.map((user, index) => {
+                        const record = index + ((users.currentPage - 1) * users.resultsPerPage) + 1;
+                        return (
+                            <tr key={index}>
+                                <td>{String("0" + (record)).slice(-2)}</td>
+                                <td>{user.login}</td>
+                                <td>{user.firstName}</td>
+                                <td>{user.lastName}</td>
+                                <td>{user.department}</td>
+                                <td>{user.role}</td>
+                                <td>
+                                    <button>
+                                        <Link to={`${match.path}/edit/${user.id}`}>Edit</Link>
+                                    </button>
+
+                                    <button onClick={() => deleteUser(user.id, user.login)} disabled={user.isDeleting}>
+                                        Delete
+                                    </button>
+                                </td>
+                                </tr>
+                        )
+                    }
                     )}
 
                     {!users.results &&
@@ -231,4 +269,4 @@ function UsersList({ match }) {
     );
 }
 
-export { UsersList };
+export default UsersList;

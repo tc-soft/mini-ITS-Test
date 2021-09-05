@@ -9,12 +9,13 @@ export const fetchWrapper = {
 }
 
 function get(url, params) {
-    const urlParams = encodeQueryString(params);
+    //const urlParams = encodeQueryString(params);
     const requestOptions = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     };
-    return fetch(`${url}${urlParams}`, requestOptions);
+    //return fetch(`${url}${urlParams}`, requestOptions);
+    return fetch(`${url}`, requestOptions);
 }
 
 function post(url, body) {
@@ -39,7 +40,7 @@ function _delete(url) {
     const requestOptions = {
         method: 'DELETE'
     };
-    return fetch(url, requestOptions).then(handleResponse);
+    return fetch(url, requestOptions);
 }
 
 function login(url, login, password) {

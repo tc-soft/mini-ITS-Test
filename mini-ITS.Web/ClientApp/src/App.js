@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router-dom';
 import Nav from './components/Nav';
 import AuthProvider from './components/AuthProvider';
 import Login from './pages/login/Login';
-import { Users } from './pages/users/Users';
+import Users from './pages/users/Users';
 
 import './styles/main.scss';
 
@@ -21,14 +21,14 @@ function App() {
 
                 <section className="main__section">
                     <Switch>
-                        <Route exact path="/Login" component={Login} />
                         <Route path="/Users" component={Users} />
+                        <Route path="/Login" component={Login} />
                     </Switch>
                 </section>
 
                 <footer className="main__footer">
-                    <p>Author: XXxxxx YYyyyy</p>
-                    <p><a href="mailto:hege@example.com">hege@example.com</a></p>
+                    <p>XXxxxx YYyyyy</p>
+                    <p><a href="mailto:hege@example.com">example@example.com</a></p>
                 </footer>
             </main>
         </AuthProvider>

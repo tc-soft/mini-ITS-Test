@@ -4,7 +4,7 @@ const baseUrl = '/Users';
 
 export const usersServices = {
     index,
-    getById,
+    edit,
     create,
     update,
     delete: _delete,
@@ -17,8 +17,8 @@ function index(params) {
     return fetchWrapper.post(`${baseUrl}/Index`, params);
 }
 
-function getById(id) {
-    return fetchWrapper.get(`${baseUrl}/${id}`);
+function edit(id) {
+    return fetchWrapper.get(`${baseUrl}/Edit/${id}`);
 }
 
 function create(params) {

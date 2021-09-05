@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -11,21 +11,47 @@ function UsersForm({ history, match }) {
     const { id } = match.params;
     const isAddMode = !id;
 
+    const [userM, setUserM] = useState(false);
+        //id: null,
+        //login: null,
+        //firstName: null,
+        //lastName: null,
+        //department: null,
+        //email: null,
+        //phone: null,
+        //role: null,
+        //passwordHash: null,
+        //confirmPasswordHash: null
+    
+
+    function handleData() {
+        if (id) {
+            setTimeout(() => {
+                usersServices.edit(id)
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.json()
+                                .then((data) => {
+                                    setUserM(data);
+                                })
+                        } else {
+                            return response.json()
+                                .then((data) => {
+                                    console.log(data);
+                                })
+                        }
+                    })
+            }, 0);
+        }
+        //return userM;
+    };
+
+    handleData();
+
     return (
         <React.Fragment>
             <Formik
-                initialValues={{
-                    login: '',
-                    firstName: '',
-                    lastName: '',
-                    department: '',
-                    email: '',
-                    phone: '',
-                    role: '',
-                    passwordHash: '',
-                    confirmPasswordHash: ''
-                }}
-
+                initialValues={{ userM }}
                 validationSchema={Yup.object({
                     login: Yup.string()
                         .required('Login użytkownika jest wymagana'),

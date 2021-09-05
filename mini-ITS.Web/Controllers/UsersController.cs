@@ -144,6 +144,38 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
+        [HttpGet("Users/Edit/{id:guid}")]
+        [CookieAuth]
+        [Authorize("Admin")]
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            try
+            {
+                var user = await _usersServices.GetAsync((Guid)id);
+                //var userDto = _mapper.Map<<Users>>(user);
+
+                //return Ok(user);
+
+                return new JsonResult(new
+                {
+                    id = user.Id,
+                    login = user.Login,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    department = user.Department,
+                    email = user.Email,
+                    phone = user.Phone,
+                    role = user.Role,
+                    passwordHash = user.PasswordHash,
+                    confirmPasswordHash = user.PasswordHash
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
         [HttpDelete("Users/Delete/{id:guid}")]
         [CookieAuth]
         [Authorize("Admin")]
@@ -163,7 +195,7 @@ namespace mini_ITS.Web.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(303, $"Error: {ex.Message}");
+                return StatusCode(500, $"Error: {ex.Message}");
             }
         }
 
