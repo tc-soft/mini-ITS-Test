@@ -150,6 +150,7 @@ function UsersEdit({ history, match }) {
                     <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
                 </div>
             </div>
+
             <div className="form-group">
                 <button type="submit" disabled={formState.isSubmitting} className="btn btn-primary">
                     {formState.isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}

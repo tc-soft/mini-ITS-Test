@@ -129,50 +129,58 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] Users users)
+        public async Task<ActionResult> CreateAsync([FromBody] UsersDto usersDto)
         {
             try
             {
-                var usersDto = _mapper.Map<UsersDto>(users);
+                //var usersDto = _mapper.Map<UsersDto>(users);
                 await _usersServices.CreateAsync(usersDto);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return StatusCode(303, $"Error: {ex.Message}");
+                return StatusCode(500, $"Error: {ex.Message}");
             }
         }
 
         [HttpGet("Users/Edit/{id:guid}")]
         [CookieAuth]
         [Authorize("Admin")]
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> EditAsync(Guid? id)
         {
             try
             {
-                var user = await _usersServices.GetAsync((Guid)id);
-                //var userDto = _mapper.Map<<Users>>(user);
-
-                //return new JsonResult(new
-                //{
-                //    id = user.Id,
-                //    login = user.Login,
-                //    firstName = user.FirstName,
-                //    lastName = user.LastName,
-                //    department = user.Department,
-                //    email = user.Email,
-                //    phone = user.Phone,
-                //    role = user.Role,
-                //    passwordHash = user.PasswordHash,
-                //    confirmPasswordHash = user.PasswordHash
-                //});
-
-                return Ok(user);
+                if (id.HasValue)
+                {
+                    var user = await _usersServices.GetAsync((Guid)id);
+                    user.PasswordHash = null;
+                    return Ok(user);
+                }
+                else
+                {
+                    return StatusCode(500, $"Error: id is null");
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("Users/Edit/{id:guid}")]
+        [CookieAuth]
+        [Authorize("Admin")]
+        public async Task<IActionResult> EditAsync([FromBody] UsersDto usersDto)
+        {
+            try
+            {
+                await _usersServices.UpdateAsync(usersDto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
             }
         }
 

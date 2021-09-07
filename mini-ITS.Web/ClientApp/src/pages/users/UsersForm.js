@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { usersServices } from '../../services/UsersServices';
@@ -10,8 +10,10 @@ import ErrorMessage from '../login/ErrorMessage';
 function UsersForm({ history, match }) {
     const { id } = match.params;
     const isAddMode = !id;
+    const isEditMode = !isAddMode;
+    const [showPassword, setShowPassword] = useState(false);
 
-    const [userM, setUserM] = useState({
+    const [user, setUser] = useState({
         login: null,
         firstName: null,
         lastName: null,
@@ -23,32 +25,67 @@ function UsersForm({ history, match }) {
         confirmPasswordHash: null
     });
 
-    useEffect(() => {
-        if (id) {
+    function readUser() {
+        if (isEditMode) {
             setTimeout(() => {
                 usersServices.edit(id)
                     .then((response) => {
                         if (response.ok) {
                             return response.json()
                                 .then((data) => {
-                                    setUserM(data);
-                                })
+                                    setUser(data);
+                                });
                         } else {
                             return response.json()
                                 .then((data) => {
                                     console.log(data);
                                 })
                         }
-                    })
-            }, 0);
-        }
-    });
+                    });
+            }, 100);
+        };
+        return user;
+    }
+
+    function createUser(values) {
+        usersServices.create(values)
+            .then((response) => {
+                if (response.ok) {
+                    history.push("/Users");
+                } else {
+                    return response.text()
+                        .then((data) => {
+                            alert(data);
+                        })
+                }
+            })
+            .catch(error => {
+                console.error('Error: ', error);
+            });
+    }
+
+    function updateUser(id, values) {
+        usersServices.update(id, values)
+            .then((response) => {
+                if (response.ok) {
+                    history.push("/Users");
+                } else {
+                    return response.text()
+                        .then((data) => {
+                            alert(data);
+                        })
+                }
+            })
+            .catch(error => {
+                console.error('Error: ', error);
+            });
+    }
 
     return (
         <React.Fragment>
             <Formik
-                enableReinitialize={true}
-                initialValues={ userM }
+                //enableReinitialize={true}
+                initialValues={ readUser() }
                 validationSchema={Yup.object({
                     login: Yup.string()
                         .required('Login użytkownika jest wymagana'),
@@ -77,30 +114,16 @@ function UsersForm({ history, match }) {
                         .oneOf([Yup.ref('passwordHash')], 'Hasła nie są takie same')
                 })}
 
-                onSubmit={(values, { setSubmitting, resetForm }) => {
-                    usersServices.create(values)
-                    .then((response) => {
-                        if (response.ok) {
-                            resetForm();
-                            history.push("/Users");
-                        } else {
-                            return response.text()
-                                .then((data) => {
-                                    //tu dodać rsjx event
-                                    alert(data);
-                                    setSubmitting(false);
-                                })
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error: ', error);
-                        setSubmitting(false);
-                    });
+                onSubmit={(values, { setSubmitting }) => {
+                    setSubmitting(false);
+                    isAddMode
+                        ? createUser(values)
+                        : updateUser(id, values);
                 }}
             >
                 {({ values, touched, errors, dirty, isValid, isSubmitting }) => (
                     <Form className="xxx">
-                        <h1 className="xxx__title">{isAddMode ? 'Add User' : 'Edit User'}</h1>
+                        <h1 className="xxx__title">{isAddMode ? 'Dodaj' : 'Edytuj'}</h1>
                         <br />
 
                         <label htmlFor="login">Login</label><br />
@@ -175,6 +198,36 @@ function UsersForm({ history, match }) {
                             </Field>
                             <ErrorMessage errors={errors.role} touched={touched.role} values={values.role} />
                         </div>
+                        <br/>
+                        {isEditMode &&
+                            <div>
+                                <h4>Zmiana hasła</h4>
+                                <p>Pozostaw puste aby zachować istniejące hasło</p>
+                            </div>
+                        }
+
+                        <div>
+                            <div>
+                                <label>
+                                    Password
+                                    {isEditMode &&
+                                        (!showPassword
+                                        ? <span> - <a onClick={() => setShowPassword(!showPassword)} className="text-primary">Show</a></span>
+                                        : <em> - {user.passwordHash}</em>
+                                        )
+                                    }
+                                </label>
+                                <input name="password" type="password" className={`form-control ${errors.password ? 'is-invalid' : ''}`} />
+                                
+                            </div>
+                            <div className="form-group col">
+                                <label>Confirm Password</label>
+                                <input name="confirmPassword" type="password" className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`} />
+                                <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
+                            </div>
+                        </div>
+
+
 
                         <label htmlFor="passwordHash">Hasło</label><br />
                         <Field
@@ -196,14 +249,17 @@ function UsersForm({ history, match }) {
 
 
                         <div className="">
-                            <button type="submit" className="buttonSend" disabled={!(isValid && dirty)}>Zapisz</button>
+                            <button type="submit" className="" disabled={!(isValid && dirty)}>Zapisz</button>
                             
-                            <NavLink exact to="." className="nav-item nav-link">
+                            <NavLink to={isAddMode ? '.' : '..'} className="">
                                 <button type="button">
-                                    Anuluj2
+                                    Anuluj
                                 </button>
                             </NavLink>
 
+                            <Link to={isAddMode ? '.' : '..'} className="">
+                                Cancel
+                            </Link>
 
                         </div>
                     </Form>

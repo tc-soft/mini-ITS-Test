@@ -33,7 +33,7 @@ function put(url, body) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     };
-    return fetch(url, requestOptions).then(handleResponse);    
+    return fetch(url, requestOptions);
 }
 
 function _delete(url) {

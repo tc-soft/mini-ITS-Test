@@ -4,8 +4,8 @@ const baseUrl = '/Users';
 
 export const usersServices = {
     index,
-    edit,
     create,
+    edit,
     update,
     delete: _delete,
     login,
@@ -13,20 +13,20 @@ export const usersServices = {
     logout
 };
 
-function index(params) {
-    return fetchWrapper.post(`${baseUrl}/Index`, params);
+function index(values) {
+    return fetchWrapper.post(`${baseUrl}/Index`, values);
+}
+
+function create(values) {
+    return fetchWrapper.post(`${baseUrl}/Create`, values);
 }
 
 function edit(id) {
     return fetchWrapper.get(`${baseUrl}/Edit/${id}`);
 }
 
-function create(params) {
-    return fetchWrapper.post(`${baseUrl}/Create`, params);
-}
-
-function update(id, params) {
-    return fetchWrapper.put(`${baseUrl}/${id}`, params);
+function update(id, values) {
+    return fetchWrapper.put(`${baseUrl}/Edit/${id}`, values);
 }
 
 function _delete(id) {
