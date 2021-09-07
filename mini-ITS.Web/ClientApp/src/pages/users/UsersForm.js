@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -12,40 +12,8 @@ function UsersForm({ history, match }) {
     const isAddMode = !id;
     const isEditMode = !isAddMode;
     const [showPassword, setShowPassword] = useState(false);
-
-    const [user, setUser] = useState({
-        login: null,
-        firstName: null,
-        lastName: null,
-        department: null,
-        email: null,
-        phone: null,
-        role: null,
-        passwordHash: null,
-        confirmPasswordHash: null
-    });
-
-    function readUser() {
-        if (isEditMode) {
-            setTimeout(() => {
-                usersServices.edit(id)
-                    .then((response) => {
-                        if (response.ok) {
-                            return response.json()
-                                .then((data) => {
-                                    setUser(data);
-                                });
-                        } else {
-                            return response.json()
-                                .then((data) => {
-                                    console.log(data);
-                                })
-                        }
-                    });
-            }, 100);
-        };
-        return user;
-    }
+    const [activePassword, setActivePassword] = useState(false);
+    const [user, setUser] = useState(null);
 
     function createUser(values) {
         usersServices.create(values)
@@ -81,190 +49,221 @@ function UsersForm({ history, match }) {
             });
     }
 
+    useEffect(() => {
+        if (isEditMode) {
+            setTimeout(() => {
+                usersServices.edit(id)
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.json()
+                                .then((data) => {
+                                    setUser(data);
+                                });
+                        } else {
+                            return response.json()
+                                .then((data) => {
+                                    console.log(data);
+                                })
+                        }
+                    });
+                setActivePassword(false);
+            }, 0);
+        }
+        else {
+            setUser({
+                login: null,
+                firstName: null,
+                lastName: null,
+                department: null,
+                email: null,
+                phone: null,
+                role: null,
+                passwordHash: '',
+                confirmPasswordHash: ''
+            });
+            setActivePassword(true);
+        }
+    }, [isEditMode, id]);
+
     return (
         <React.Fragment>
-            <Formik
-                //enableReinitialize={true}
-                initialValues={ readUser() }
-                validationSchema={Yup.object({
-                    login: Yup.string()
-                        .required('Login użytkownika jest wymagana'),
-                    firstName: Yup.string()
-                        .required('Imię użytkownika jest wymagane'),
-                    lastName: Yup.string()
-                        .required('Nazwisko użytkownika jest wymagane'),
-                    department: Yup.string()
-                        .required('Dział użytkownika jest wymagany'),
-                    email: Yup.string()
-                        .email('Email jest niewłaściwy')
-                        .required('Email użytkownika jest wymagany'),
-                    phone: Yup.string()
-                        .required('Telefon użytkownika jest wymagany'),
-                    role: Yup.string()
-                        .required('Rola użytkownika jest wymagana'),
-                    passwordHash: Yup.string()
-                        .transform(x => x === '' ? undefined : x)
-                        .concat(isAddMode ? Yup.string().required('Hasło jest wymagane') : null)
-                        .min(6, 'Hasło musi mieć minimum 6 znaków'),
-                    confirmPasswordHash: Yup.string()
-                        .transform(x => x === '' ? undefined : x)
-                        .when('passwordHash', (password, schema) => {
-                            if (password || isAddMode) return schema.required('Potwierdzenie hasła jest wymagane');
-                        })
-                        .oneOf([Yup.ref('passwordHash')], 'Hasła nie są takie same')
-                })}
+            {user &&
+                <Formik
+                    //enableReinitialize={true}
+                    initialValues={ user }
+                    validationSchema={Yup.object({
+                        login: Yup.string()
+                            .required('Login użytkownika jest wymagana'),
+                        firstName: Yup.string()
+                            .required('Imię użytkownika jest wymagane'),
+                        lastName: Yup.string()
+                            .required('Nazwisko użytkownika jest wymagane'),
+                        department: Yup.string()
+                            .required('Dział użytkownika jest wymagany'),
+                        email: Yup.string()
+                            .email('Email jest niewłaściwy')
+                            .required('Email użytkownika jest wymagany'),
+                        phone: Yup.string()
+                            .required('Telefon użytkownika jest wymagany'),
+                        role: Yup.string()
+                            .required('Rola użytkownika jest wymagana'),
+                        passwordHash: Yup.string()
+                            .transform(x => x === '' ? undefined : x)
+                            .concat(activePassword ? Yup.string().required('Hasło jest wymagane') : null)
+                            .min(6, 'Hasło musi mieć minimum 6 znaków'),
+                        confirmPasswordHash: Yup.string()
+                            .transform(x => x === '' ? undefined : x)
+                            .when('passwordHash', (password, schema) => {
+                                if (password && activePassword) return schema.required('Potwierdzenie hasła jest wymagane');
+                            })
+                            .oneOf([Yup.ref('passwordHash')], 'Hasła nie są takie same')
+                    })}
 
-                onSubmit={(values, { setSubmitting }) => {
-                    setSubmitting(false);
-                    isAddMode
-                        ? createUser(values)
-                        : updateUser(id, values);
-                }}
-            >
-                {({ values, touched, errors, dirty, isValid, isSubmitting }) => (
-                    <Form className="xxx">
-                        <h1 className="xxx__title">{isAddMode ? 'Dodaj' : 'Edytuj'}</h1>
-                        <br />
+                    onSubmit={(values, { setSubmitting }) => {
+                        setSubmitting(false);
+                        isAddMode
+                            ? createUser(values)
+                            : updateUser(id, values);
+                    }}
+                >
+                    {({ values, touched, errors, dirty, isValid, isSubmitting }) => (
+                        <Form className="xxx">
+                            <h1 className="xxx__title">{isAddMode ? 'Dodaj' : 'Edytuj'}</h1>
+                            <br />
 
-                        <label htmlFor="login">Login</label><br />
-                        <Field
-                            name="login"
-                            type="text"
-                            placeholder="Wpisz login"
-                            className={errors.login && (touched.login || values.login) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.login} touched={touched.login} values={values.login} />
-
-                        <div>
-                            <label htmlFor="firstName">Imię</label><br />
+                            <label htmlFor="login">Login</label><br />
                             <Field
-                                name="firstName"
+                                name="login"
                                 type="text"
-                                placeholder="Wpisz imię"
-                                className={errors.firstName && (touched.firstName || values.firstName) && "contact__ValidationError"}
+                                placeholder="Wpisz login"
+                                className={errors.login && (touched.login || values.login) && "contact__ValidationError"}
                             />
-                            <ErrorMessage errors={errors.firstName} touched={touched.firstName} values={values.firstName} />
+                            <ErrorMessage errors={errors.login} touched={touched.login} values={values.login} />
 
-                            <label htmlFor="lastName">Nazwisko</label><br />
-                            <Field
-                                name="lastName"
-                                type="text"
-                                placeholder="Wpisz nazwisko"
-                                className={errors.lastName && (touched.lastName || values.lastName) && "contact__ValidationError"}
-                            />
-                            <ErrorMessage errors={errors.lastName} touched={touched.lastName} values={values.lastName} />
-
-                            <label htmlFor="department">Dział</label><br />
-                            <Field name="department" as="select"
-                                className={errors.department && (touched.department || values.department) && "contact__ValidationError"}
-                            >
-                                <option value=""></option>
-                                <option value="Managers">Managersi</option>
-                                <option value="Produkcja">Produkcja</option>
-                                <option value="Dział Techniczny">Dział Techniczny</option>
-                                <option value="IT">IT</option>
-                            </Field>
-                            <ErrorMessage errors={errors.department} touched={touched.department} values={values.department} />
-                        </div>
-
-                        <div>
-                            <label htmlFor="email">Email</label><br />
-                            <Field
-                                name="email"
-                                type="text"
-                                placeholder="Wpisz email"
-                                className={errors.email && (touched.email || values.email) && "contact__ValidationError"}
-                            />
-                            <ErrorMessage errors={errors.email} touched={touched.email} values={values.email} />
-
-
-                            <label htmlFor="phone">Telefon</label><br />
-                            <Field
-                                name="phone"
-                                type="text"
-                                placeholder="Wpisz telefon"
-                                className={errors.phone && (touched.phone || values.phone) && "contact__ValidationError"}
-                            />
-                            <ErrorMessage errors={errors.phone} touched={touched.phone} values={values.phone} />
-
-                            <label htmlFor="role">Rola</label><br />
-                            <Field name="role" as="select"
-                                className={errors.role && (touched.role || values.role) && "contact__ValidationError"}
-                            >
-                                <option value=""></option>
-                                <option value="User">Użytkownik</option>
-                                <option value="Manager">Kierownik</option>
-                                <option value="Administrator">Administrator</option>
-                            </Field>
-                            <ErrorMessage errors={errors.role} touched={touched.role} values={values.role} />
-                        </div>
-                        <br/>
-                        {isEditMode &&
                             <div>
-                                <h4>Zmiana hasła</h4>
-                                <p>Pozostaw puste aby zachować istniejące hasło</p>
-                            </div>
-                        }
+                                <label htmlFor="firstName">Imię</label><br />
+                                <Field
+                                    name="firstName"
+                                    type="text"
+                                    placeholder="Wpisz imię"
+                                    className={errors.firstName && (touched.firstName || values.firstName) && "contact__ValidationError"}
+                                />
+                                <ErrorMessage errors={errors.firstName} touched={touched.firstName} values={values.firstName} />
 
-                        <div>
+                                <label htmlFor="lastName">Nazwisko</label><br />
+                                <Field
+                                    name="lastName"
+                                    type="text"
+                                    placeholder="Wpisz nazwisko"
+                                    className={errors.lastName && (touched.lastName || values.lastName) && "contact__ValidationError"}
+                                />
+                                <ErrorMessage errors={errors.lastName} touched={touched.lastName} values={values.lastName} />
+
+                                <label htmlFor="department">Dział</label><br />
+                                <Field name="department" as="select"
+                                    className={errors.department && (touched.department || values.department) && "contact__ValidationError"}
+                                >
+                                    <option value=""></option>
+                                    <option value="Managers">Managersi</option>
+                                    <option value="Produkcja">Produkcja</option>
+                                    <option value="Dział Techniczny">Dział Techniczny</option>
+                                    <option value="IT">IT</option>
+                                </Field>
+                                <ErrorMessage errors={errors.department} touched={touched.department} values={values.department} />
+                            </div>
+
                             <div>
-                                <label>
-                                    Password
-                                    {isEditMode &&
-                                        (!showPassword
-                                        ? <span> - <a onClick={() => setShowPassword(!showPassword)} className="text-primary">Show</a></span>
-                                        : <em> - {user.passwordHash}</em>
-                                        )
-                                    }
-                                </label>
-                                <input name="password" type="password" className={`form-control ${errors.password ? 'is-invalid' : ''}`} />
-                                
+                                <label htmlFor="email">Email</label><br />
+                                <Field
+                                    name="email"
+                                    type="text"
+                                    placeholder="Wpisz email"
+                                    className={errors.email && (touched.email || values.email) && "contact__ValidationError"}
+                                />
+                                <ErrorMessage errors={errors.email} touched={touched.email} values={values.email} />
+
+
+                                <label htmlFor="phone">Telefon</label><br />
+                                <Field
+                                    name="phone"
+                                    type="text"
+                                    placeholder="Wpisz telefon"
+                                    className={errors.phone && (touched.phone || values.phone) && "contact__ValidationError"}
+                                />
+                                <ErrorMessage errors={errors.phone} touched={touched.phone} values={values.phone} />
+
+                                <label htmlFor="role">Rola</label><br />
+                                <Field name="role" as="select"
+                                    className={errors.role && (touched.role || values.role) && "contact__ValidationError"}
+                                >
+                                    <option value=""></option>
+                                    <option value="User">Użytkownik</option>
+                                    <option value="Manager">Kierownik</option>
+                                    <option value="Administrator">Administrator</option>
+                                </Field>
+                                <ErrorMessage errors={errors.role} touched={touched.role} values={values.role} />
                             </div>
-                            <div className="form-group col">
-                                <label>Confirm Password</label>
-                                <input name="confirmPassword" type="password" className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`} />
-                                <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
+
+                            <br />
+
+                            {isEditMode &&
+                                <div>
+                                    <label>
+                                        <input type="checkbox"
+                                            defaultChecked={activePassword}
+                                            onChange={() => setActivePassword(!activePassword)}
+                                        />
+                                        Zmiana hasła
+                                    </label>
+                                </div>
+                            }
+
+                            <br />
+
+                            <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                                {showPassword ? "Hide" : "Show"}
+                            </button>
+
+                            <br />
+
+                            <label htmlFor="passwordHash">Hasło</label><br />
+                            <Field
+                                name="passwordHash"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Wpisz hasło"
+                                disabled={!activePassword}
+                                className={errors.passwordHash && (touched.passwordHash || values.passwordHash) && "contact__ValidationError"}
+                            />
+                            <ErrorMessage errors={errors.passwordHash} touched={touched.passwordHash} values={values.passwordHash} />
+
+                            <label htmlFor="confirmPasswordHash">Hasło</label><br />
+                            <Field
+                                name="confirmPasswordHash"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Wpisz hasło"
+                                disabled={!activePassword}
+                                className={errors.confirmPasswordHash && (touched.confirmPasswordHash || values.confirmPasswordHash) && "contact__ValidationError"}
+                            />
+                            <ErrorMessage errors={errors.confirmPasswordHash} touched={touched.confirmPasswordHash} values={values.confirmPasswordHash} />
+
+                            <div className="">
+                                <button type="submit" className="" disabled={!(isValid)}>Zapisz</button>
+
+                                <NavLink to={isAddMode ? '.' : '..'} className="">
+                                    <button type="button">
+                                        Anuluj
+                                    </button>
+                                </NavLink>
+
+                                <Link to={isAddMode ? '.' : '..'} className="">
+                                    Anuluj 2
+                                </Link>
+
                             </div>
-                        </div>
-
-
-
-                        <label htmlFor="passwordHash">Hasło</label><br />
-                        <Field
-                            name="passwordHash"
-                            type="password"
-                            placeholder="Wpisz hasło"
-                            className={errors.passwordHash && (touched.passwordHash || values.passwordHash) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.passwordHash} touched={touched.passwordHash} values={values.passwordHash} />
-
-                        <label htmlFor="confirmPasswordHash">Hasło</label><br />
-                        <Field
-                            name="confirmPasswordHash"
-                            type="password"
-                            placeholder="Wpisz hasło"
-                            className={errors.confirmPasswordHash && (touched.confirmPasswordHash || values.confirmPasswordHash) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.confirmPasswordHash} touched={touched.confirmPasswordHash} values={values.confirmPasswordHash} />
-
-
-                        <div className="">
-                            <button type="submit" className="" disabled={!(isValid && dirty)}>Zapisz</button>
-                            
-                            <NavLink to={isAddMode ? '.' : '..'} className="">
-                                <button type="button">
-                                    Anuluj
-                                </button>
-                            </NavLink>
-
-                            <Link to={isAddMode ? '.' : '..'} className="">
-                                Cancel
-                            </Link>
-
-                        </div>
-                    </Form>
-                )}
-            </Formik>
+                        </Form>
+                    )}
+                </Formik>
+            }
         </React.Fragment>
     );
 }

@@ -42,12 +42,10 @@ namespace mini_ITS.Web.Controllers
                 {
                     Name = "Department",
                     Operator = SqlQueryOperator.Equal,
-                    Value = null
-                    //Value = new string("Managers")
+                    //Value = null
+                    Value = new string("Managers")
                 }
             };
-
-            //var result = await _usersRepository.GetAsync(myFilter);
 
             var result = await _usersService.GetAsync(new SqlPagedQuery<Users>
             {

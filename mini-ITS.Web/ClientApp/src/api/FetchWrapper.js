@@ -80,24 +80,24 @@ function logout(url) {
     return fetch(url, requestOptions);
 }
 
-function handleResponse(response) {
-    return response.json()
-        .then((responseData) => {
-            return responseData;
-        })
-        .catch(error => {
-                console.warn(error);
-                Promise.reject(error);
-            }
-        );
-}
+//function handleResponse(response) {
+//    return response.json()
+//        .then((responseData) => {
+//            return responseData;
+//        })
+//        .catch(error => {
+//                console.warn(error);
+//                Promise.reject(error);
+//            }
+//        );
+//}
 
-function encodeQueryString(params) {
-    const keys = Object.keys(params)
-    return keys.length
-        ? "?" + keys
-            .map(key => encodeURIComponent(key)
-                + "=" + encodeURIComponent(params[key]))
-            .join("&")
-        : ""
-}
+//function encodeQueryString(params) {
+//    const keys = Object.keys(params)
+//    return keys.length
+//        ? "?" + keys
+//            .map(key => encodeURIComponent(key)
+//                + "=" + encodeURIComponent(params[key]))
+//            .join("&")
+//        : ""
+//}

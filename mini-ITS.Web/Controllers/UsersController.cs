@@ -154,7 +154,7 @@ namespace mini_ITS.Web.Controllers
                 if (id.HasValue)
                 {
                     var user = await _usersServices.GetAsync((Guid)id);
-                    user.PasswordHash = null;
+                    user.PasswordHash = "";
                     return Ok(user);
                 }
                 else
