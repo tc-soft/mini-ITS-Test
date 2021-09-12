@@ -72,6 +72,8 @@ namespace mini_ITS.Web.Controllers
 
         [HttpGet]
         [CookieAuth]
+        //[ValidateAntiForgeryToken]
+        //[AutoValidateAntiforgeryToken]
         public async Task<IActionResult> LoginStatusAsync()
         {
             try

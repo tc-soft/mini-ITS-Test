@@ -27,18 +27,6 @@ export default function AuthProvider({ children }) {
             });
     }
 
-    //if (!currentUser && !loginStatus) {
-    //    setLoginStatus(true);
-    //    if (window.performance) {
-    //        if (performance.navigation.type === 1) {
-    //            //This page is reloaded
-    //        } else {
-    //            //This page is not reloaded
-    //            console.log("currentUser : check login status - not reloaded");
-    //        }
-    //    }
-    //}
-
     console.log(`currentUser : ${currentUser}, loginStatus : ${loginStatus}`);
 
     const handleLogin = (user) => {

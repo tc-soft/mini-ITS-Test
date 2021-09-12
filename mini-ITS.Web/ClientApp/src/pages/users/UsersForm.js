@@ -14,7 +14,7 @@ function UsersForm({ history, match }) {
     const [showPassword, setShowPassword] = useState(false);
     const [activePassword, setActivePassword] = useState(false);
     const [user, setUser] = useState(null);
-
+    
     function createUser(values) {
         usersServices.create(values)
             .then((response) => {
@@ -89,8 +89,8 @@ function UsersForm({ history, match }) {
         <React.Fragment>
             {user &&
                 <Formik
-                    //enableReinitialize={true}
-                    initialValues={ user }
+                //enableReinitialize={true}
+                initialValues={user}
                     validationSchema={Yup.object({
                         login: Yup.string()
                             .required('Login użytkownika jest wymagana'),
@@ -125,8 +125,8 @@ function UsersForm({ history, match }) {
                             ? createUser(values)
                             : updateUser(id, values);
                     }}
-                >
-                    {({ values, touched, errors, dirty, isValid, isSubmitting }) => (
+            >
+                {({ values, touched, errors, dirty, isValid, isSubmitting, setFieldValue, setErrors }) => (
                         <Form className="xxx">
                             <h1 className="xxx__title">{isAddMode ? 'Dodaj' : 'Edytuj'}</h1>
                             <br />
@@ -215,6 +215,17 @@ function UsersForm({ history, match }) {
                                         />
                                         Zmiana hasła
                                     </label>
+
+                                    <Field
+                                        type="checkbox"
+                                        name="activePassword"
+                                        checked={activePassword}
+                                            onChange={() => {
+                                                setActivePassword(!activePassword);
+                                                setFieldValue('firstName', '');
+                                            }
+                                        }
+                                    />
                                 </div>
                             }
 
@@ -232,6 +243,7 @@ function UsersForm({ history, match }) {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Wpisz hasło"
                                 disabled={!activePassword}
+                                autoComplete="on"
                                 className={errors.passwordHash && (touched.passwordHash || values.passwordHash) && "contact__ValidationError"}
                             />
                             <ErrorMessage errors={errors.passwordHash} touched={touched.passwordHash} values={values.passwordHash} />
@@ -242,6 +254,7 @@ function UsersForm({ history, match }) {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Wpisz hasło"
                                 disabled={!activePassword}
+                                autoComplete="on"
                                 className={errors.confirmPasswordHash && (touched.confirmPasswordHash || values.confirmPasswordHash) && "contact__ValidationError"}
                             />
                             <ErrorMessage errors={errors.confirmPasswordHash} touched={touched.confirmPasswordHash} values={values.confirmPasswordHash} />
