@@ -15,7 +15,35 @@ function UsersForm({ history, match }) {
     const [activePassword, setActivePassword] = useState(false);
     const [schema, setSchema] = useState(null);
     const [user, setUser] = useState(null);
-        
+
+    const mapRole = [{
+        "id": 1,
+        "name": "Użytkownik",
+        "value": "User"
+    }, {
+        "id": 2,
+        "name": "Kierownik",
+        "value": "Manager"
+    }, {
+        "id": 3,
+        "name": "Administrator",
+        "value": "Administrator"
+    }];
+
+    const mapDepartment = [{
+        "id": 1,
+        "name": "Użytkownik",
+        "value": "User"
+    }, {
+        "id": 2,
+        "name": "Kierownik",
+        "value": "Manager"
+    }, {
+        "id": 3,
+        "name": "Administrator",
+        "value": "Administrator"
+    }];
+    
     function createUser(values) {
         usersServices.create(values)
             .then((response) => {
@@ -153,15 +181,25 @@ function UsersForm({ history, match }) {
                     })}
                 /><br />
 
+
+                {/*<input*/}
+                {/*    type="text"*/}
+                    
+                {/*    {...register("role", { required: true, maxLength: 80 })}*/}
+                {/*/><br />*/}
+
                 <label>Rola</label><br />
-                <input
-                    type="text"
-                    placeholder="Wybierz rolę"
+                <select
                     {...register("role", { required: true, maxLength: 80 })}
-                /><br /><br /><br />
-
-
-
+                    name="group"
+                    placeholder="Wybierz rolę"
+                    selectValue="-----"
+                >
+                    {mapRole.map(
+                        (x) => <option value={x.value}>{x.name}</option>)
+                    }
+                </select>
+                <br /><br />
 
                 {isEditMode &&
                     <div>
