@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-import * as Yup from 'yup';
 import { usersServices } from '../../services/UsersServices';
 import ErrorMessage from '../login/ErrorMessage';
 
@@ -13,8 +12,8 @@ function UsersForm({ history, match }) {
     const isEditMode = !isAddMode;
     const [showPassword, setShowPassword] = useState(false);
     const [activePassword, setActivePassword] = useState(false);
-    const [schema, setSchema] = useState(null);
     const [user, setUser] = useState(null);
+    const { handleSubmit, register, reset, getValues, formState: { errors } } = useForm();
 
     const mapRole = [{
         "id": 1,
@@ -32,17 +31,26 @@ function UsersForm({ history, match }) {
 
     const mapDepartment = [{
         "id": 1,
-        "name": "Użytkownik",
-        "value": "User"
+        "name": "IT",
+        "value": "IT"
     }, {
         "id": 2,
-        "name": "Kierownik",
-        "value": "Manager"
+        "name": "Development",
+        "value": "Development"
     }, {
         "id": 3,
-        "name": "Administrator",
-        "value": "Administrator"
-    }];
+        "name": "Managers",
+        "value": "Managers"
+    }, {
+        "id": 4,
+        "name": "Research",
+        "value": "Research"
+    }, {
+        "id": 5,
+        "name": "Sales",
+        "value": "Sales"
+        }
+    ];
     
     function createUser(values) {
         usersServices.create(values)
@@ -77,10 +85,10 @@ function UsersForm({ history, match }) {
             });
     }
 
-    const { handleSubmit, register, reset, formState: { errors } } = useForm();
+    
     
     const onSubmit = (values) => {
-        console.log(values);
+        console.table(values);
     };
 
     useEffect(() => {
@@ -154,11 +162,17 @@ function UsersForm({ history, match }) {
                 /><br />
 
                 <label>Dział</label><br />
-                <input
-                    type="text"
-                    placeholder="Wpisz dział"
+                <select
                     {...register("department", { required: true, maxLength: 80 })}
-                /><br />
+                    name="department"
+                    placeholder="Wybierz dział"
+                    selectValue="-----"
+                >
+                    {mapDepartment.map(
+                        (x) => <option value={x.value}>{x.name}</option>)
+                    }
+                </select>
+                <br /><br />
 
                 <label>Email</label><br />
                 <input
@@ -182,16 +196,10 @@ function UsersForm({ history, match }) {
                 /><br />
 
 
-                {/*<input*/}
-                {/*    type="text"*/}
-                    
-                {/*    {...register("role", { required: true, maxLength: 80 })}*/}
-                {/*/><br />*/}
-
                 <label>Rola</label><br />
                 <select
                     {...register("role", { required: true, maxLength: 80 })}
-                    name="group"
+                    name="role"
                     placeholder="Wybierz rolę"
                     selectValue="-----"
                 >
@@ -222,19 +230,61 @@ function UsersForm({ history, match }) {
                     {showPassword ? "Hide" : "Show"}
                 </button><br />
 
-                <label>Hasło</label><br />
+                {/*============================================================================================*/}
+                <label>Hasło:</label><br />
                 <input
-                    type="password"
+                    name="passwordHash"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Wpisz hasło"
-                    {...register("passwordHash", { required: true, maxLength: 80 })}
-                /><br />
+                    disabled={!activePassword}
+                    autoComplete="on"
+                    {...register("passwordHash",
+                        if({activePassword}) {
+                            required: "Hasło jest wymagane",
+                            minLength: {value: 6, message: "Hasło musi zawierać min. 8 znaków"
+                        }
 
-                <label>Powtórz hasło</label><br />
+                        activePassword ? {
+                            required: "Hasło jest wymagane",
+                            minLength: { value: 6, message: "Hasło musi zawierać min. 8 znaków" }
+                        } : required: false
+                        )
+                    }
+                />
+                {errors.passwordHash && (
+                    <p style={{ color: "red" }}>
+                        {errors.passwordHash.message}
+                    </p>
+                )}
+                <br />
+
+                <label>Powtórz hasło:</label><br />
                 <input
-                    type="password"
-                    placeholder="Powtórz hasło"
-                    {...register("confirmPasswordHash", { required: true, maxLength: 80 })}
-                /><br />
+                    name="confirmPasswordHash"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Wpisz hasło"
+                    disabled={!activePassword}
+                    autoComplete="off"
+                    {...register("confirmPasswordHash", {
+                        required: activePassword ? "Potwierdź hasło !" : false,
+                        validate: activePassword ?
+                        {
+                            matchesPreviousPassword: (value) => {
+                                const { passwordHash } = getValues();
+                                return passwordHash === value || "Hasła powinny się zgadzać !";
+                            }
+                        } : false
+                    })}
+                />
+                {errors.confirmPasswordHash && (
+                    <p style={{ color: "red" }}>
+                        {errors.confirmPasswordHash.message}
+                    </p>
+                )}
+                <br />
+                {/*============================================================================================*/}
+
+                <br />
 
                 <div className="">
                     <button type="submit" className="" disabled={false}>Zapisz</button>
