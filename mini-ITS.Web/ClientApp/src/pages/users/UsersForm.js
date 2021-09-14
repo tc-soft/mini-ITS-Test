@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { usersServices } from '../../services/UsersServices';
-import ErrorMessage from '../login/ErrorMessage';
 
 //import '../../styles/pages/Login.scss';
 
@@ -13,40 +12,32 @@ function UsersForm({ history, match }) {
     const [showPassword, setShowPassword] = useState(false);
     const [activePassword, setActivePassword] = useState(false);
     const [user, setUser] = useState(null);
-    const { handleSubmit, register, reset, getValues, formState: { errors } } = useForm();
+    const { handleSubmit, register, reset, getValues, setValue, clearErrors, formState: { errors } } = useForm();
 
     const mapRole = [{
-        "id": 1,
         "name": "Użytkownik",
         "value": "User"
     }, {
-        "id": 2,
         "name": "Kierownik",
         "value": "Manager"
     }, {
-        "id": 3,
         "name": "Administrator",
         "value": "Administrator"
     }];
 
     const mapDepartment = [{
-        "id": 1,
         "name": "IT",
         "value": "IT"
     }, {
-        "id": 2,
         "name": "Development",
         "value": "Development"
     }, {
-        "id": 3,
         "name": "Managers",
         "value": "Managers"
     }, {
-        "id": 4,
         "name": "Research",
         "value": "Research"
     }, {
-        "id": 5,
         "name": "Sales",
         "value": "Sales"
         }
@@ -68,6 +59,7 @@ function UsersForm({ history, match }) {
                 console.error('Error: ', error);
             });
     }
+
     function updateUser(id, values) {
         usersServices.update(id, values)
             .then((response) => {
@@ -83,12 +75,17 @@ function UsersForm({ history, match }) {
             .catch(error => {
                 console.error('Error: ', error);
             });
+        if (activePassword) {
+            const data = [values.login, user.passwordHash, values.passwordHash];
+            usersServices.update(id, data);
+        }
     }
 
-    
-    
-    const onSubmit = (values) => {
+    function onSubmit(values) {
         console.table(values);
+        isAddMode
+            ? createUser(values)
+            : updateUser(id, values)
     };
 
     useEffect(() => {
@@ -98,7 +95,9 @@ function UsersForm({ history, match }) {
                     if (response.ok) {
                         return response.json()
                             .then((data) => {
-                                setUser(data)
+                                data.passwordHash = '';
+                                data.confirmPasswordHash = '';
+                                setUser(data);
                             });
                     } else {
                         return response.json()
@@ -114,10 +113,10 @@ function UsersForm({ history, match }) {
                 login: null,
                 firstName: null,
                 lastName: null,
-                department: null,
+                department: "IT",
                 email: null,
                 phone: null,
-                role: null,
+                role: "Manager",
                 passwordHash: '',
                 confirmPasswordHash: ''
             });
@@ -148,6 +147,7 @@ function UsersForm({ history, match }) {
                 <input
                     type="text"
                     placeholder="Wpisz imię"
+                    error={errors.firstName}
                     {...register("firstName", { required: true, maxLength: 80 })}
                 />
                 {errors.firstName && "imie jest wymagane"}
@@ -158,18 +158,18 @@ function UsersForm({ history, match }) {
                 <input
                     type="text"
                     placeholder="Wpisz nazwisko"
+                    error={errors.lastName}
                     {...register("lastName", { required: true, maxLength: 80 })}
                 /><br />
 
                 <label>Dział</label><br />
                 <select
-                    {...register("department", { required: true, maxLength: 80 })}
-                    name="department"
                     placeholder="Wybierz dział"
-                    selectValue="-----"
+                    error={errors.department}
+                    {...register("department", { required: true, maxLength: 80 })}
                 >
                     {mapDepartment.map(
-                        (x) => <option value={x.value}>{x.name}</option>)
+                        (x, y) => <option key={y} value={x.value}>{x.name}</option>)
                     }
                 </select>
                 <br /><br />
@@ -178,6 +178,7 @@ function UsersForm({ history, match }) {
                 <input
                     type="text"
                     placeholder="Wpisz email"
+                    error={errors.email}
                     {...register("email", {
                         required: true,
                         pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -188,6 +189,7 @@ function UsersForm({ history, match }) {
                 <input
                     type="tel"
                     placeholder="Wpisz telefon"
+                    error={errors.phone}
                     {...register("phone", {
                         required: true,
                         maxLength: 11,
@@ -198,13 +200,12 @@ function UsersForm({ history, match }) {
 
                 <label>Rola</label><br />
                 <select
-                    {...register("role", { required: true, maxLength: 80 })}
-                    name="role"
                     placeholder="Wybierz rolę"
-                    selectValue="-----"
+                    error={errors.role}
+                    {...register("role", { required: true, maxLength: 80 })}
                 >
                     {mapRole.map(
-                        (x) => <option value={x.value}>{x.name}</option>)
+                        (x, y) => <option key={y} value={x.value}>{x.name}</option>)
                     }
                 </select>
                 <br /><br />
@@ -214,8 +215,16 @@ function UsersForm({ history, match }) {
                         <label>
                         <input
                             type="checkbox"
-                            defaultChecked={activePassword}
-                            onChange={() => setActivePassword(!activePassword)}
+                            checked={activePassword}
+                            onChange={() => {
+                                setActivePassword(!activePassword);
+                                setShowPassword(false);
+                                setValue("passwordHash", "");
+                                clearErrors("passwordHash");
+                                setValue("confirmPasswordHash", "");
+                                clearErrors("confirmPasswordHash");
+                                }
+                            }
                         />
                                 Zmiana hasła
                             </label>
@@ -223,31 +232,30 @@ function UsersForm({ history, match }) {
                 }
                 <br />
 
-
-
-
-                <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? "Hide" : "Show"}
+                <button type="button"
+                    disabled={!activePassword}
+                    onClick={() => activePassword ? setShowPassword(!showPassword) : null}
+                >
+                    { showPassword ? "Hide" : "Show" }
                 </button><br />
 
                 {/*============================================================================================*/}
                 <label>Hasło:</label><br />
                 <input
-                    name="passwordHash"
                     type={showPassword ? "text" : "password"}
                     placeholder="Wpisz hasło"
                     disabled={!activePassword}
                     autoComplete="on"
-                    {...register("passwordHash",
-                        if({activePassword}) {
-                            required: "Hasło jest wymagane",
-                            minLength: {value: 6, message: "Hasło musi zawierać min. 8 znaków"
-                        }
-
-                        activePassword ? {
-                            required: "Hasło jest wymagane",
-                            minLength: { value: 6, message: "Hasło musi zawierać min. 8 znaków" }
-                        } : required: false
+                    error={errors.passwordHash}
+                    {...register("passwordHash", activePassword ?
+                            {
+                                required: "Hasło jest wymagane",
+                                minLength: { value: 6, message: "Hasło musi zawierać min. 6 znaków" }
+                            }
+                            :
+                            {
+                                required: false
+                            }
                         )
                     }
                 />
@@ -265,16 +273,18 @@ function UsersForm({ history, match }) {
                     placeholder="Wpisz hasło"
                     disabled={!activePassword}
                     autoComplete="off"
-                    {...register("confirmPasswordHash", {
-                        required: activePassword ? "Potwierdź hasło !" : false,
-                        validate: activePassword ?
-                        {
-                            matchesPreviousPassword: (value) => {
-                                const { passwordHash } = getValues();
-                                return passwordHash === value || "Hasła powinny się zgadzać !";
+                    error={errors.confirmPasswordHash}
+                    {...register("confirmPasswordHash", activePassword ?
+                            {
+                                required: "Potwierdź hasło !",
+                                validate: value => value === getValues("passwordHash") || "Hasła powinny się zgadzać !"
                             }
-                        } : false
-                    })}
+                            :
+                            {
+                            required: false
+                            }
+                        )
+                    }
                 />
                 {errors.confirmPasswordHash && (
                     <p style={{ color: "red" }}>

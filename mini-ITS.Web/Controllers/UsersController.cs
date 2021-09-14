@@ -135,7 +135,6 @@ namespace mini_ITS.Web.Controllers
         {
             try
             {
-                //var usersDto = _mapper.Map<UsersDto>(users);
                 await _usersServices.CreateAsync(usersDto);
 
                 return Ok();
@@ -178,6 +177,10 @@ namespace mini_ITS.Web.Controllers
             try
             {
                 await _usersServices.UpdateAsync(usersDto);
+                if (usersDto.PasswordHash != null)
+                {
+                    //await _usersServices.ChangePasswordAsync(usersDto.Login, oldPassword, newPassword);
+                }
                 return Ok();
             }
             catch (Exception ex)
@@ -208,6 +211,9 @@ namespace mini_ITS.Web.Controllers
                 return StatusCode(500, $"Error: {ex.Message}");
             }
         }
+
+
+
 
         [CookieAuth]
         public IActionResult Forbidden()
