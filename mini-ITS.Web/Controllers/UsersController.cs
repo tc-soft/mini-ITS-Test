@@ -112,10 +112,10 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [CookieAuth]
         [Authorize("Admin")]
-        public async Task<IActionResult> IndexAsync([FromQuery] SqlPagedQuery<Users> sqlPagedQuery)
+        public async Task<IActionResult> IndexAsync([FromBody] SqlPagedQuery<Users> sqlPagedQuery)
         {
             try
             {

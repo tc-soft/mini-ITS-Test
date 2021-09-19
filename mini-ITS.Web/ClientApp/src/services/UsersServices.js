@@ -14,7 +14,7 @@ export const usersServices = {
 };
 
 function index(values) {
-    return fetchWrapper.get(`${baseUrl}/Index`, values);
+    return fetchWrapper.post(`${baseUrl}/Index`, values);
 }
 
 function create(values) {

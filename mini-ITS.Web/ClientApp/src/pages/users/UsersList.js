@@ -84,29 +84,53 @@ function UsersList(props) {
     }
 
     function handleDepartmentFilter(department) {
-        setPagedQuery(prevState => ({
-            ...prevState,
-            filter: [{
-                name: "Department",
-                operator: "=",
-                value: department
-            }],
-            page: 1
-        }));
+        setPagedQuery(prevState => prevState.filter ?
+            ({
+                ...prevState,
+                filter: [...prevState.filter, {
+                    name: "Department",
+                    operator: "=",
+                    value: department
+                }],
+                page: 1
+            })
+            :
+            ({
+                ...prevState,
+                filter: [{
+                    name: "Department",
+                    operator: "=",
+                    value: department
+                }],
+                page: 1
+            })
+        )
 
         setActiveDepartmentFilter(department);
     }
 
     function handleRoleFilter(role) {
-        setPagedQuery(prevState => ({
-            ...prevState,
-            filter: [{
-                name: "Role",
-                operator: "=",
-                value: role
-            }],
-            page: 1
-        }));
+        setPagedQuery(prevState => prevState.filter ?
+                ({
+                    ...prevState,
+                    filter: [...prevState.filter, {
+                        name: "Role",
+                        operator: "=",
+                        value: role
+                    }],
+                    page: 1
+                })
+                :
+                ({
+                    ...prevState,
+                filter: [{
+                        name: "Role",
+                        operator: "=",
+                        value: role
+                    }],
+                    page: 1
+                })
+        )
 
         setActiveRoleFilter(role);
     }
