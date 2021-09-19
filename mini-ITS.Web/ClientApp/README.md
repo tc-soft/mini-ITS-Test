@@ -1,3 +1,25 @@
+## Use HTTP methods to operate on collections and entities
+
+There is one single rule concerning operations performed on collections and entities - 
+**Use [HTTP methods](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html)**
+
+You can operate on resources using HTTP methods such as `POST`, `GET`, `PUT`, and `DELETE` -
+to remember them, refer to the CRUD acronym (Create-Read-Update-Delete).
+
+| Resource / HTTP method | POST (create)    | GET (read)  | PUT (update)           | PATCH           | DELETE (delete) |
+| ---------------------- | ---------------- | ----------- | ---------------------- | --------------- |---------------- |
+| /users                 | Create new user  | List users  | Error                  |                 | Error           |
+| /users/{uuid}          | Error            | Get user    | Update user if exists  | Change password | Delete user     |
+
+
+### Update and create must return a resource representation
+
+`PUT` and `POST` methods modify fields of the underlying resource that were not part of the provided parameters
+(for example: `createdAt` or `updatedAt` timestamps). As indicated in the section [Provide full resources where available](#provide-full-resources-where-available),
+to prevent an API consumer from having to hit the API again for an updated representation,
+have the API return the updated (or created) representation as part of the response.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

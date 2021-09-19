@@ -2,6 +2,7 @@ export const fetchWrapper = {
     get,
     post,
     put,
+    patch,
     delete: _delete,
     login,
     loginStatus,
@@ -30,6 +31,15 @@ function post(url, body) {
 function put(url, body) {
     const requestOptions = {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    };
+    return fetch(url, requestOptions);
+}
+
+function patch(url, body) {
+    const requestOptions = {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     };
@@ -92,12 +102,53 @@ function logout(url) {
 //        );
 //}
 
-//function encodeQueryString(params) {
-//    const keys = Object.keys(params)
-//    return keys.length
-//        ? "?" + keys
-//            .map(key => encodeURIComponent(key)
-//                + "=" + encodeURIComponent(params[key]))
-//            .join("&")
-//        : ""
-//}
+function encodeQueryString(params) {
+    const paramsKeys = Object.keys(params)
+    var results = "";
+
+    if (paramsKeys.length) {
+        results = "?" + paramsKeys
+            .map(key => {
+                const filters = params[key]
+                if (typeof filters === 'object' && filters !== null) {
+                    return filters
+                        .map((element, index) => {
+                                const paramsFilter = Object.keys(element)
+                            return `${key}[${index}].${paramsFilter[0]}=` + element.name + '&' +
+                                    `${key}[${index}].${paramsFilter[1]}=` + element.operator + '&' +
+                                    `${key}[${index}].${paramsFilter[2]}=String : ` + element.value
+                        })
+                        .join('&')
+                }
+                else {
+                    return key + "=" + params[key]
+                }
+            }
+            )
+            .join('&')
+    }
+
+    return results;
+
+    //const jsonParams = JSON.stringify(params);
+    //return params
+    //    ? '?' + jsonParams
+    //    : "";
+
+    //const keys = Object.keys(params)
+    //return keys.length
+    //    ? {
+    //        "?" + keys
+    //            .map(key => {
+    //                if (key.length) {
+    //                    return key.map(object =>
+    //                        encodeURIComponent(object + "[]") + "=" + encodeURIComponent(params[key])
+    //                        )
+    //                }
+    //                    return encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
+    //                }
+    //            )
+    //            .join("&")
+    //    }
+    //    : ""
+}

@@ -12,6 +12,7 @@ using mini_ITS.Web.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace mini_ITS.Web.Controllers
@@ -32,7 +33,7 @@ namespace mini_ITS.Web.Controllers
         [HttpPost]
         //[ValidateAntiForgeryToken]
         //[AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData )
         {
             try
             {
@@ -189,6 +190,26 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
+        [HttpPatch("Users/Update/{id:guid}")]
+        [CookieAuth]
+        [Authorize("Admin")]
+        public async Task<IActionResult> UpdateAsync([FromBody] string login, string oldPassword, string newPassword)
+        {
+            try
+            {
+                //await _usersServices.UpdateAsync(usersDto);
+                if (oldPassword is not null && newPassword is not null)  
+                {
+                    await _usersServices.ChangePasswordAsync(login, oldPassword, newPassword);
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
         [HttpDelete("Users/Delete/{id:guid}")]
         [CookieAuth]
         [Authorize("Admin")]
@@ -228,5 +249,6 @@ namespace mini_ITS.Web.Controllers
 
             public string Password { get; set; }
         }
+
     }
 }
