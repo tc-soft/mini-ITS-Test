@@ -10,13 +10,13 @@ export const fetchWrapper = {
 }
 
 function get(url, params) {
-    //const urlParams = encodeQueryString(params);
+    const urlParams = encodeQueryString(params);
     const requestOptions = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     };
-    //return fetch(`${url}${urlParams}`, requestOptions);
-    return fetch(`${url}`, requestOptions);
+    return fetch(`${url}${urlParams}`, requestOptions);
+    //return fetch(`${url}`, requestOptions);
 }
 
 function post(url, body) {
