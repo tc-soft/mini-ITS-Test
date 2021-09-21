@@ -22,17 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="ClientApp_origin\package-lock.json" />
-    <None Include="ClientApp_origin\package.json" />
-    <None Include="ClientApp_origin\public\manifest.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\mini-ITS.Core\mini-ITS.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ClientApp_Example\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

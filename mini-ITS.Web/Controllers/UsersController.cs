@@ -177,10 +177,9 @@ namespace mini_ITS.Web.Controllers
         {
             try
             {
-                await _usersServices.UpdateAsync(usersDto);
-                if (usersDto.PasswordHash != null)
+                if (usersDto is not null)
                 {
-                    //await _usersServices.ChangePasswordAsync(usersDto.Login, oldPassword, newPassword);
+                    await _usersServices.UpdateAsync(usersDto);
                 }
                 return Ok();
             }
@@ -190,17 +189,18 @@ namespace mini_ITS.Web.Controllers
             }
         }
 
-        [HttpPatch("Users/Update/{id:guid}")]
+        [HttpPatch("Users/ChangePassword/{id:guid}")]
         [CookieAuth]
         [Authorize("Admin")]
-        public async Task<IActionResult> UpdateAsync([FromBody] string login, string oldPassword, string newPassword)
+        public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePassword changePassword)
         {
             try
             {
-                //await _usersServices.UpdateAsync(usersDto);
-                if (oldPassword is not null && newPassword is not null)  
+                if (changePassword.OldPassword is not null &&
+                    changePassword.NewPassword is not null &&
+                    await _usersServices.LoginAsync(changePassword.Login, changePassword.OldPassword))  
                 {
-                    await _usersServices.ChangePasswordAsync(login, oldPassword, newPassword);
+                    await _usersServices.ChangePasswordAsync(changePassword.Login, changePassword.OldPassword, changePassword.NewPassword);
                 }
                 return Ok();
             }
@@ -248,6 +248,13 @@ namespace mini_ITS.Web.Controllers
             public string Login { get; set; }
 
             public string Password { get; set; }
+        }
+
+        public class ChangePassword
+        {
+            public string Login { get; set; }
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
         }
 
     }

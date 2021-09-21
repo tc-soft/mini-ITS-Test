@@ -7,8 +7,8 @@ export const usersServices = {
     create,
     edit,
     update,
-    patch,
     delete: _delete,
+    changePassword,
     login,
     loginStatus,
     logout
@@ -30,12 +30,12 @@ function update(id, values) {
     return fetchWrapper.put(`${baseUrl}/Edit/${id}`, values);
 }
 
-function patch(id, values) {
-    return fetchWrapper.patch(`${baseUrl}/Edit/${id}`, values);
-}
-
 function _delete(id) {
     return fetchWrapper.delete(`${baseUrl}/Delete/${id}`);
+}
+
+function changePassword(id, values) {
+    return fetchWrapper.patch(`${baseUrl}/ChangePassword/${id}`, values);
 }
 
 function login(login, password) {
