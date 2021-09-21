@@ -51,35 +51,35 @@ namespace mini_ITS.Core.Database
 
                 foreach (var item in _filters)
                 {
-                    if (item.Value is not null && item.Value is JsonElement)
-                    {
-                        JsonElement value = (JsonElement)item.Value;
-                        if (value.ValueKind == JsonValueKind.String)
-                        {
-                            var re = value.ValueKind.ToString();
-                            var rt = value.ToString();
-                            var ty = value.GetString();
-                            var cv = value.ToString().Substring(1, value.ToString().Length - 2);
+                    //if (item.Value is not null && item.Value is JsonElement)
+                    //{
+                    //    JsonElement value = (JsonElement)item.Value;
+                    //    if (value.ValueKind == JsonValueKind.String)
+                    //    {
+                    //        var re = value.ValueKind.ToString();
+                    //        var rt = value.ToString();
+                    //        var ty = value.GetString();
+                    //        var cv = value.ToString().Substring(1, value.ToString().Length - 2);
 
-                            filters.Add($"{item.Name} {item.Operator} '{ty}'");
-                        }
-                    }
+                    //        filters.Add($"{item.Name} {item.Operator} '{ty}'");
+                    //    }
+                    //}
 
-                    if (item.Value is not null && item.Value is string && !String.IsNullOrWhiteSpace((string)item.Value))
+                    if (item.Value is not null && !String.IsNullOrWhiteSpace((string)item.Value))
                     {
                         filters.Add($"{item.Name} {item.Operator} '{item.Value}'");
                     }
 
-                    if (item.Value is not null && item.Value is int)
-                    {
-                        filters.Add($"{item.Name} {item.Operator} '{item.Value.ToString()}'");
-                    }
+                    //if (item.Value is not null && item.Value is int)
+                    //{
+                    //    filters.Add($"{item.Name} {item.Operator} '{item.Value.ToString()}'");
+                    //}
 
-                    if (item.Value is not null && item.Value is DateTime)
-                    {
-                        var dateTime = (DateTime)item.Value;
-                        filters.Add($"{item.Name} {item.Operator} '{dateTime.ToString(Constants.DATE_FORMAT)}'");
-                    }
+                    //if (item.Value is not null && item.Value is DateTime)
+                    //{
+                    //    var dateTime = (DateTime)item.Value;
+                    //    filters.Add($"{item.Name} {item.Operator} '{dateTime.ToString(Constants.DATE_FORMAT)}'");
+                    //}
                 }
 
                 queryBuilder.Append($" WHERE {String.Join(" AND ", filters)}");
@@ -161,35 +161,35 @@ namespace mini_ITS.Core.Database
 
                 foreach (var item in _filters)
                 {
-                    if (item.Value is not null && item.Value is JsonElement)
-                    {
-                        JsonElement value = (JsonElement)item.Value;
-                        if (value.ValueKind == JsonValueKind.String)
-                        {
-                            var re = value.ValueKind.ToString();
-                            var rt = value.ToString();
-                            var ty = value.GetString();
-                            var cv = value.ToString().Substring(1, value.ToString().Length - 2);
+                    //if (item.Value is not null && item.Value is JsonElement)
+                    //{
+                    //    JsonElement value = (JsonElement)item.Value;
+                    //    if (value.ValueKind == JsonValueKind.String)
+                    //    {
+                    //        var re = value.ValueKind.ToString();
+                    //        var rt = value.ToString();
+                    //        var ty = value.GetString();
+                    //        var cv = value.ToString().Substring(1, value.ToString().Length - 2);
 
-                            filters.Add($"{item.Name} {item.Operator} '{ty}'");
-                        }
-                    }
+                    //        filters.Add($"{item.Name} {item.Operator} '{ty}'");
+                    //    }
+                    //}
 
-                    if (item.Value is not null && item.Value is string && !String.IsNullOrWhiteSpace((string)item.Value))
+                    if (item.Value is not null && !String.IsNullOrWhiteSpace((string)item.Value))
                     {
                         filters.Add($"{item.Name} {item.Operator} '{item.Value}'");
                     }
 
-                    if (item.Value is not null && item.Value is int)
-                    {
-                        filters.Add($"{item.Name} {item.Operator} '{item.Value.ToString()}'");
-                    }
+                    //if (item.Value is not null && item.Value is int)
+                    //{
+                    //    filters.Add($"{item.Name} {item.Operator} '{item.Value.ToString()}'");
+                    //}
 
-                    if (item.Value is not null && item.Value is DateTime)
-                    {
-                        var dateTime = (DateTime)item.Value;
-                        filters.Add($"{item.Name} {item.Operator} '{dateTime.ToString(Constants.DATE_FORMAT)}'");
-                    }
+                    //if (item.Value is not null && item.Value is DateTime)
+                    //{
+                    //    var dateTime = (DateTime)item.Value;
+                    //    filters.Add($"{item.Name} {item.Operator} '{dateTime.ToString(Constants.DATE_FORMAT)}'");
+                    //}
                 }
 
                 queryBuilder.Append($" WHERE {String.Join(" AND ", filters)}");

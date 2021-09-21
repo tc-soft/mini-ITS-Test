@@ -84,8 +84,20 @@ function UsersList(props) {
     }
 
     function handleDepartmentFilter(department) {
-        setPagedQuery(prevState => prevState.filter ?
-            ({
+        if (pagedQuery.filter && pagedQuery.filter.find(x => x.name === 'Department')) {
+            setPagedQuery(prevState => ({
+                ...prevState,
+                filter: [...prevState.filter.filter(x => x.name !== 'Department'), {
+                    name: "Department",
+                    operator: "=",
+                    value: department
+                }],
+                page: 1
+            })
+            )
+        }
+        else if (pagedQuery.filter) {
+            setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [...prevState.filter, {
                     name: "Department",
@@ -94,8 +106,10 @@ function UsersList(props) {
                 }],
                 page: 1
             })
-            :
-            ({
+            )
+        }
+        else {
+            setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [{
                     name: "Department",
@@ -104,33 +118,49 @@ function UsersList(props) {
                 }],
                 page: 1
             })
-        )
+            )
+        }
 
         setActiveDepartmentFilter(department);
     }
 
     function handleRoleFilter(role) {
-        setPagedQuery(prevState => prevState.filter ?
-                ({
-                    ...prevState,
-                    filter: [...prevState.filter, {
-                        name: "Role",
-                        operator: "=",
-                        value: role
-                    }],
-                    page: 1
-                })
-                :
-                ({
-                    ...prevState,
+        if (pagedQuery.filter && pagedQuery.filter.find(x => x.name === 'Role')) {
+            setPagedQuery(prevState => ({
+                ...prevState,
+                filter: [...prevState.filter.filter(x => x.name !== 'Role'), {
+                    name: "Role",
+                    operator: "=",
+                    value: role
+                }],
+                page: 1
+            })
+            )
+        }
+        else if (pagedQuery.filter) {
+            setPagedQuery(prevState => ({
+                ...prevState,
+                filter: [...prevState.filter, {
+                    name: "Role",
+                    operator: "=",
+                    value: role
+                }],
+                page: 1
+            })
+            )
+        }
+        else {
+            setPagedQuery(prevState => ({
+                ...prevState,
                 filter: [{
-                        name: "Role",
-                        operator: "=",
-                        value: role
-                    }],
-                    page: 1
-                })
-        )
+                    name: "Role",
+                    operator: "=",
+                    value: role
+                }],
+                page: 1
+            })
+            )
+        }
 
         setActiveRoleFilter(role);
     }
@@ -193,6 +223,13 @@ function UsersList(props) {
             >
                 Role: User
             </button>
+            <button
+                onClick={() => { handleRoleFilter("Manager") }}
+                disabled={activeRoleFilter === "Manager" ? true : false}
+            >
+                Role: Manager
+            </button>
+
             <button
                 onClick={() => { handleResetFilter() }}
             >

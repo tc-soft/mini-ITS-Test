@@ -7,6 +7,7 @@ export const usersServices = {
     create,
     edit,
     update,
+    patch,
     delete: _delete,
     login,
     loginStatus,
@@ -14,7 +15,7 @@ export const usersServices = {
 };
 
 function index(values) {
-    return fetchWrapper.post(`${baseUrl}/Index`, values);
+    return fetchWrapper.get(`${baseUrl}/Index`, values);
 }
 
 function create(values) {
@@ -27,6 +28,10 @@ function edit(id) {
 
 function update(id, values) {
     return fetchWrapper.put(`${baseUrl}/Edit/${id}`, values);
+}
+
+function patch(id, values) {
+    return fetchWrapper.patch(`${baseUrl}/Edit/${id}`, values);
 }
 
 function _delete(id) {
