@@ -132,6 +132,12 @@ namespace mini_ITS.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+
+                //endpoints.MapFallbackToController("Index", "Users");
+
+                //endpoints.MapControllerRoute(
+                //    name: "users",
+                //    pattern: "{controller/{action=Users}");
             });
 
             app.UseSpa(spa =>
