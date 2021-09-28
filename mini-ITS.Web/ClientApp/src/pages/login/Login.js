@@ -1,111 +1,125 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { useAuth } from '../../components/AuthProvider';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
+import { useForm } from "react-hook-form";
 import ErrorMessage from './ErrorMessage';
 import { usersServices } from '../../services/UsersServices';
 
 import '../../styles/pages/Login.scss';
 
-function LoginForm() {
+function LoginForm({ history }) {
     const { handleLogin } = useAuth();
     const [loginError, setLoginError] = useState("");
+    const { handleSubmit, register, reset, formState: { errors } } = useForm();
+
+    function onSubmit(values) {
+        usersServices.login(values.login, values.password)
+            .then((response) => {
+                if (response.ok) {
+                    return response.json()
+                        .then((data) => {
+                            handleLogin(data);
+                            setLoginError(null);
+                            reset();
+                            history.push('/');
+                        })
+                } else {
+                    return response.json()
+                        .then((data) => {
+                            setLoginError(data);
+                            reset();
+                        })
+                }
+            })
+            .catch((error) => {
+                setTimeout(() => {
+                    console.error('Error:', error);
+                    alert(error);
+                }, 200);
+            });
+    };
+
     return (
-        <React.Fragment>
-            <Formik
-                initialValues={{
-                    login: '',
-                    password: ''
-                }}
+        <>
+            <h3>Logowanie</h3>
+            <br />
 
-                validationSchema={Yup.object({
-                    login: Yup
-                        .string()
-                        .required('Pole wymagane'),
-                    password: Yup
-                        .string()
-                        .required('Pole wymagane')
-                })}
+            <form onSubmit={handleSubmit(onSubmit)}>
 
-                onSubmit={(values, { setSubmitting, resetForm }) => {
-                    usersServices.login(values.login, values.password)
-                    .then((response) => {
-                        if (response.ok) {
-                            return response.json()
-                                .then((data) => {
-                                    setSubmitting(false);
-                                    resetForm();
-                                    handleLogin(data);
-                                    setLoginError(null);
-                                })
-                        } else {
-                            return response.json()
-                                .then((data) => {
-                                    setLoginError(data);
-                                    setSubmitting(false);
-                                    resetForm();
-                                })
-                        }
-                    })
-                    .catch((error) => {
-                        setTimeout(() => {
-                            console.error('Error:', error);
-                            alert(error);
-                            setSubmitting(false);
-                        }, 200);
-                    });
-                }}
-            >
-                {({ values, touched, errors, dirty, isValid, isSubmitting }) => (
-                    <Form
-                        className="login">
-                        <h2 className="login__title">Zaloguj się</h2>
-                        <br/>
+                {loginError
+                    ? <p style={{ color: 'red' }}>{loginError}</p>
+                    : <p style={{ color: 'red' }}>&nbsp;</p>
+                }
 
-                        {loginError && (
-                            <div style={{ color: "red" }}>
-                                <span>{loginError}</span>
-                            </div>
-                        )}
+                <label>Nazwa użytkownika</label><br />
+                <input
+                    type='text'
+                    placeholder='Wpisz login'
+                    error={errors.login}
+                    {...register('login', {
+                        required: 'Nazwa użytkownika jest wymagana',
+                        maxLength: { value: 20, message: 'Nazwa użytkownika za długa' }
+                    })}
+                />
+                {errors.login
+                    ? <p style={{ color: 'red' }}>{errors.login?.message}</p>
+                    : <p style={{ color: 'red' }}>&nbsp;</p>
+                }
 
-                        <label htmlFor="login">Nazwa użytkownika</label><br />
-                        <Field
-                            name="login"
-                            type="text"
-                            placeholder="Wpisz login"
-                            className={errors.name && (touched.name || values.name) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.name} touched={touched.name} values={values.name} />
+                <label>Hasło</label><br />
+                <input
+                    type='password'
+                    placeholder='Wpiz hasło'
+                    autoComplete='on'
+                    error={errors.password}
+                    {...register('password', {
+                        required: 'Hasło jest wymagane',
+                        maxLength: { value: 40, message: 'Hasło za długie' }
+                    })}
+                />
+                {errors.password
+                    ? <p style={{ color: 'red' }}>{errors.password?.message}</p>
+                    : <p style={{ color: 'red' }}>&nbsp;</p>
+                }
 
-                        <label htmlFor="password">Hasło</label><br/>
-                        <Field
-                            name="password"
-                            type="password"
-                            placeholder="Wpiz hasło"
-                            autoComplete="on"
-                            className={errors.email && (touched.email || values.email) && "contact__ValidationError"}
-                        />
-                        <ErrorMessage errors={errors.email} touched={touched.email} values={values.email} />
+                <label className='contact__rodo'>
+                    <input
+                        type='checkbox'
+                        name='toggle'
+                    />
+                    &nbsp;Zapamiętaj mnie&nbsp;
+                </label>
 
-                    <label className="contact__rodo">
-                        <Field 
-                            type="checkbox"
-                            name="toggle"
-                        />
-                        &nbsp;Zapamiętaj mnie&nbsp;
-                    </label>
+                <div className='contact__buttons'>
+                    <button
+                        type='submit'
+                        className=''
+                        disabled={false}
+                    >
+                        Login
+                    </button>
+                </div>
 
-                    <div className="contact__buttons">
-                        <button type="submit" className="buttonSend" disabled={!(isValid && dirty)}>Login</button>
-                    </div>
+                <br />
+                <Link to='/restore'>Zapomniałem hasła</Link>
 
-                    <br />
-                    <Link to="/restore">Zapomniałem hasła</Link>
-                </Form>
-            )}
-            </Formik>
-        </React.Fragment>
+                <div className=''>
+                    <button
+                        type='submit'
+                        className=''
+                        disabled={false}
+                    >
+                        Zapisz
+                    </button>
+
+                    <Link to='.' className=''>
+                        Anuluj 2
+                    </Link>
+
+                </div>
+
+            </form>
+        </>
     );
 }
 
