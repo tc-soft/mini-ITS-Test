@@ -12,7 +12,6 @@ using mini_ITS.Web.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace mini_ITS.Web.Controllers
@@ -31,8 +30,7 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData )
         {
             try
@@ -73,8 +71,7 @@ namespace mini_ITS.Web.Controllers
 
         [HttpGet]
         [CookieAuth]
-        //[ValidateAntiForgeryToken]
-        //[AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginStatusAsync()
         {
             try
@@ -232,9 +229,6 @@ namespace mini_ITS.Web.Controllers
                 return StatusCode(500, $"Error: {ex.Message}");
             }
         }
-
-
-
 
         [CookieAuth]
         public IActionResult Forbidden()
