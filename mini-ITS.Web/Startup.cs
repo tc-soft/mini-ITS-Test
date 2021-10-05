@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ using mini_ITS.Core.Repository;
 using mini_ITS.Core.Services;
 using mini_ITS.Web.Mapper;
 using System;
+using System.Linq;
 
 namespace mini_ITS.Web
 {
@@ -88,6 +90,11 @@ namespace mini_ITS.Web
 
             services.AddControllersWithViews();
 
+            //ValidateAntiForgeryToken
+            services.AddAntiforgery(o => {
+                o.Cookie.Name = "X-CSRF-TOKEN";
+            });
+
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -132,6 +139,12 @@ namespace mini_ITS.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+
+                //endpoints.MapFallbackToController("Index", "Users");
+
+                //endpoints.MapControllerRoute(
+                //    name: "users",
+                //    pattern: "{controller/{action=Users}");
             });
 
             app.UseSpa(spa =>
@@ -143,6 +156,24 @@ namespace mini_ITS.Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            app.Use(next => context =>
+            {
+                string path = context.Request.Path.Value;
+                if (path != null)
+                {
+                    var tokens = antiforgery.GetAndStoreTokens(context);
+                    context.Response.Cookies.Append("XSRF-TOKEN",
+                      tokens.RequestToken, new CookieOptions
+                      {
+                          HttpOnly = false,
+                          Path = "/",
+                      }
+                    );
+                }
+                return next(context);
+            });
+
         }
     }
 }

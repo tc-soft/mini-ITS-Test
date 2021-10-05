@@ -8,8 +8,8 @@ function Users({ match }) {
     const { path } = match;
     const [pagedQuery, setPagedQuery] = useState({
         filter: null,
-        sortColumnName: "Login",
-        sortDirection: "ASC",
+        sortColumnName: 'Login',
+        sortDirection: 'ASC',
         page: 1,
         resultsPerPage: 5
     });

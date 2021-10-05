@@ -10,13 +10,11 @@ export const fetchWrapper = {
 }
 
 function get(url, params) {
-    //const urlParams = encodeQueryString(params);
     const requestOptions = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     };
-    //return fetch(`${url}${urlParams}`, requestOptions);
-    return fetch(`${url}`, requestOptions);
+    return fetch(`${url}${params ? encodeQueryString(params) : ''}`, requestOptions);
 }
 
 function post(url, body) {
@@ -90,38 +88,24 @@ function logout(url) {
     return fetch(url, requestOptions);
 }
 
-//function handleResponse(response) {
-//    return response.json()
-//        .then((responseData) => {
-//            return responseData;
-//        })
-//        .catch(error => {
-//                console.warn(error);
-//                Promise.reject(error);
-//            }
-//        );
-//}
-
 function encodeQueryString(params) {
     const paramsKeys = Object.keys(params)
     var results = "";
 
     if (paramsKeys.length) {
         results = "?" + paramsKeys
-            .map(key => {
-                const filters = params[key]
-                if (typeof filters === 'object' && filters !== null) {
-                    return filters
-                        .map((element, index) => {
-                                const paramsFilter = Object.keys(element)
-                            return `${key}[${index}].${paramsFilter[0]}=` + element.name + '&' +
-                                    `${key}[${index}].${paramsFilter[1]}=` + element.operator + '&' +
-                                    `${key}[${index}].${paramsFilter[2]}=String : ` + element.value
+            .map(paramKey => {
+                if (typeof params[paramKey] === 'object' && params[paramKey] !== null) {
+                    return params[paramKey]
+                        .map((key, index) => {
+                            return `${paramKey}[${index}].name=${key.name}&` +
+                                `${paramKey}[${index}].operator=${key.operator}&` +
+                                `${paramKey}[${index}].value=${encodeURIComponent(key.value)}`
                         })
                         .join('&')
                 }
                 else {
-                    return key + "=" + params[key]
+                    return `${paramKey}=${params[paramKey]}`
                 }
             }
             )
@@ -129,26 +113,4 @@ function encodeQueryString(params) {
     }
 
     return results;
-
-    //const jsonParams = JSON.stringify(params);
-    //return params
-    //    ? '?' + jsonParams
-    //    : "";
-
-    //const keys = Object.keys(params)
-    //return keys.length
-    //    ? {
-    //        "?" + keys
-    //            .map(key => {
-    //                if (key.length) {
-    //                    return key.map(object =>
-    //                        encodeURIComponent(object + "[]") + "=" + encodeURIComponent(params[key])
-    //                        )
-    //                }
-    //                    return encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
-    //                }
-    //            )
-    //            .join("&")
-    //    }
-    //    : ""
 }

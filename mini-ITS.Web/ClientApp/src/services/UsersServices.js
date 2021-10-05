@@ -8,13 +8,14 @@ export const usersServices = {
     edit,
     update,
     delete: _delete,
+    changePassword,
     login,
     loginStatus,
     logout
 };
 
 function index(values) {
-    return fetchWrapper.post(`${baseUrl}/Index`, values);
+    return fetchWrapper.get(`${baseUrl}/Index`, values);
 }
 
 function create(values) {
@@ -31,6 +32,10 @@ function update(id, values) {
 
 function _delete(id) {
     return fetchWrapper.delete(`${baseUrl}/Delete/${id}`);
+}
+
+function changePassword(id, values) {
+    return fetchWrapper.patch(`${baseUrl}/ChangePassword/${id}`, values);
 }
 
 function login(login, password) {

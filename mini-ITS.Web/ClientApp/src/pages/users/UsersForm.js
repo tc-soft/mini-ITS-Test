@@ -64,7 +64,24 @@ function UsersForm({ history, match }) {
         usersServices.update(id, values)
             .then((response) => {
                 if (response.ok) {
-                    history.push("/Users");
+                    if (activePassword) {
+                        const data = {
+                            login: values.login,
+                            oldPassword: values.oldPassword,
+                            newPassword: values.passwordHash
+                        };
+                        usersServices.changePassword(id, data)
+                            .then((response) => {
+                                if (response.ok) {
+                                    history.push("/Users");
+                                }
+                            }
+                            );
+                    }
+                    else {
+                        history.push("/Users");
+                    }
+                    
                 } else {
                     return response.text()
                         .then((data) => {
@@ -75,10 +92,7 @@ function UsersForm({ history, match }) {
             .catch(error => {
                 console.error('Error: ', error);
             });
-        if (activePassword) {
-            const data = [values.login, user.passwordHash, values.passwordHash];
-            usersServices.update(id, data);
-        }
+
     }
 
     function onSubmit(values) {
@@ -242,6 +256,32 @@ function UsersForm({ history, match }) {
 
                 {/*============================================================================================*/}
                 <label>Hasło:</label><br />
+                <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Wpisz stare hasło"
+                    disabled={!activePassword}
+                    autoComplete="on"
+                    error={errors.oldPassword}
+                    {...register("oldPassword", activePassword ?
+                        {
+                            required: "Hasło jest wymagane",
+                            minLength: { value: 6, message: "Hasło musi zawierać min. 6 znaków" }
+                        }
+                        :
+                        {
+                            required: false
+                        }
+                    )
+                    }
+                />
+                {errors.oldPassword && (
+                    <p style={{ color: "red" }}>
+                        {errors.oldPassword.message}
+                    </p>
+                )}
+                <br />
+
+
                 <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Wpisz hasło"
