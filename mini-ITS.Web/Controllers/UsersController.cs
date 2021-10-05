@@ -31,7 +31,6 @@ namespace mini_ITS.Web.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync([FromBody] LoginData loginData )
         {
             try

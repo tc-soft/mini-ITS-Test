@@ -156,24 +156,6 @@ namespace mini_ITS.Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
-            app.Use(next => context =>
-            {
-                string path = context.Request.Path.Value;
-                if (path != null)
-                {
-                    var tokens = antiforgery.GetAndStoreTokens(context);
-                    context.Response.Cookies.Append("XSRF-TOKEN",
-                      tokens.RequestToken, new CookieOptions
-                      {
-                          HttpOnly = false,
-                          Path = "/",
-                      }
-                    );
-                }
-                return next(context);
-            });
-
         }
     }
 }

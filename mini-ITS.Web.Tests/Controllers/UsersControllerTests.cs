@@ -24,24 +24,26 @@ using mini_ITS.Core.Dto;
 using RestSharp;
 using System.Net;
 using RestSharp.Serialization.Json;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace mini_ITS.Web.Tests.Controllers
 {
     public class UsersControllerTests
     {
+        private IUsersService usersService;
         private UsersController usersController;
-        private Mock<IUsersRepository> usersRepository;
-        private Mock<IUsersService> usersService;
-        private Mock<IOptions<DatabaseOptions>> _databaseOptions;
+        private IUsersRepository _usersRepository;
+        //private Mock<IOptions<DatabaseOptions>> _databaseOptions;
         private Mock<IPasswordHasher<Users>> hasher;
         private Mock<IMapper> mapper;
         private Mock<IHttpContextAccessor> httpContextAccessor;
 
-        //private IOptions<DatabaseOptions> _databaseOptions;
-        //private ISqlConnectionString _sqlConnectionString;
+        private IOptions<DatabaseOptions> _databaseOptions;
+        private ISqlConnectionString _sqlConnectionString;
 
-        //private IMapper _mapper;
-        //private IPasswordHasher<Users> _hasher;
+        private IMapper _mapper;
+        private IPasswordHasher<Users> _hasher;
         //private IUsersRepository _usersRepository;
         //private IUsersService _usersService;
         //private UsersController _usersController;
@@ -50,68 +52,75 @@ namespace mini_ITS.Web.Tests.Controllers
         [SetUp]
         public void Init()
         {
-            mapper = new Mock<IMapper>();
-            httpContextAccessor = new Mock<IHttpContextAccessor>();
-            hasher = new Mock<IPasswordHasher<Users>>();
+            var _path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "mini-ITS.Web");
 
-            usersService = new Mock<IUsersService>();
-            usersController = new UsersController(usersService.Object, mapper.Object, httpContextAccessor.Object);
+            var configuration = new ConfigurationBuilder()
+               .SetBasePath(_path)
+               .AddJsonFile("appsettings.json", false)
+               .Build();
+
+            _databaseOptions = Microsoft.Extensions.Options.Options.Create(configuration.GetSection("DatabaseOptions").Get<DatabaseOptions>());
+            _sqlConnectionString = new SqlConnectionString(_databaseOptions);
+            _usersRepository = new UsersRepository(_sqlConnectionString);
+            _mapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<UsersDto, Users>();
+                cfg.CreateMap<Users, UsersDto>();
+            }).CreateMapper();
+            _hasher = new PasswordHasher<Users>();
+            usersService = new UsersService(_usersRepository, _mapper, _hasher);
+
+
+
+            //mapper = new Mock<IMapper>();
+
+            httpContextAccessor = new Mock<IHttpContextAccessor>();
+            //hasher = new Mock<IPasswordHasher<Users>>();
+
+            //usersService = new Mock<IUsersService>();
+            //usersController = new UsersController(usersService.Object, mapper.Object, httpContextAccessor.Object);
+
+            var authServiceMock = new Mock<IAuthenticationService>();
+            authServiceMock
+                .Setup(_ => _.SignInAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties>()))
+                .Returns(Task.FromResult((object)null));
+
+            var serviceProviderMock = new Mock<IServiceProvider>();
+            serviceProviderMock
+                .Setup(_ => _.GetService(typeof(IAuthenticationService)))
+                .Returns(authServiceMock.Object);
+
+            usersController = new UsersController(usersService, _mapper, httpContextAccessor.Object)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = new DefaultHttpContext
+                    {
+                        // How mock RequestServices?
+                        RequestServices = serviceProviderMock.Object
+                    }
+                }
+
+            };
+
 
             //usersController = new Mock<UsersController>();
 
-            //var _path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "mini-ITS.Web");
 
-            //var configuration = new ConfigurationBuilder()
-            //   .SetBasePath(_path)
-            //   .AddJsonFile("appsettings.json", false)
-            //   .Build();
-
-            //_databaseOptions = Microsoft.Extensions.Options.Options.Create(configuration.GetSection("DatabaseOptions").Get<DatabaseOptions>());
-            //_sqlConnectionString = new SqlConnectionString(_databaseOptions);
-            //_usersRepository = new UsersRepository(_sqlConnectionString);
-            //_mapper = new MapperConfiguration(cfg =>
-            //{
-            //    cfg.CreateMap<UsersDto, Users>();
-            //    cfg.CreateMap<Users, UsersDto>();
-            //}).CreateMapper();
-            //_hasher = new PasswordHasher<Users>();
-            //_usersService = new UsersService(_usersRepository, _mapper, _hasher);
             //_usersController = new UsersController(_usersService, _mapper, _httpContextAccessor);
+
         }
 
         [Test]
-        public async Task LoginAsync()
+        public void LoginWithRestSharp()
         {
-            //var result = usersController.Setup(p => p.LoginAsync(new LoginData
-            //{
-            //    Login = "admin",
-            //    Password = "admin"
-            //}));
+            RestClient client = new RestClient("https://localhost:44375");
+            RestRequest request = new RestRequest("Users/Login", Method.POST);
 
-            var result = await usersController.LoginAsync(new LoginData
-            {
-                Login = "admin",
-                Password = "admin"
-            });
-
-            //var actualResult = (await usersController.LoginAsync(It.IsAny<Guid>()) as
-            //OkNegotiatedContentResult<IEnumerable<MyAccount>>).Content;
-
-            //var result = usersController.LoginAsync(loginData).Result;
-            var resultStatusCode = ((ObjectResult)result).StatusCode;
-
-            TestContext.Out.WriteLine($"Result: {resultStatusCode}");
-
-            Assert.Pass();
-        }
-
-        [Test]
-        public void Login()
-        {
-            var client = new RestClient("https://localhost:44375/Users/Login");
+            //var client = new RestClient("https://localhost:44375/Users/Login");
             client.Timeout = 3000;
             
-            var request = new RestRequest(Method.POST);
+            //var request = new RestRequest(Method.POST);
             request.AddJsonBody(new LoginData
             {
                 Login = "admin",
@@ -129,6 +138,24 @@ namespace mini_ITS.Web.Tests.Controllers
             TestContext.Out.WriteLine($"Result: {issues}");
 
             Assert.Pass();
+        }
+
+        [Test]
+        public async Task LoginWithMock()
+        {
+            var result = await usersController.LoginAsync(new LoginData
+            {
+                Login = "admin",
+                Password = "admini"
+            });
+
+            var resultStatusCode = ((JsonResult)result).Value;
+            //var resultValue = ((ObjectResult)result).Value;
+
+            TestContext.Out.WriteLine($"resultStatusCode: {resultStatusCode}");
+            //TestContext.Out.WriteLine($"resultValue: {resultValue}");
+
+            Assert.AreEqual(HttpStatusCode.OK, result);
         }
     }
 }
