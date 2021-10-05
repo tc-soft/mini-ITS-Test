@@ -37,6 +37,7 @@ namespace mini_ITS.Web.Controllers
         {
             try
             {
+                //_usersServices.SetPasswordAsync("admin", "admin");
                 if (await _usersServices.LoginAsync(loginData.Login, loginData.Password))
                 {
                     var usersDto = await _usersServices.GetAsync(loginData.Login);

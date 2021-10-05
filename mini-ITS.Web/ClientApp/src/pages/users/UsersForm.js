@@ -98,6 +98,7 @@ function UsersForm({ history, match }) {
                                 data.passwordHash = '';
                                 data.confirmPasswordHash = '';
                                 setUser(data);
+                                //dfsgcsdgctg
                             });
                     } else {
                         return response.json()
