@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 import { usersServices } from '../services/UsersServices';
 
 const AuthContext = createContext();
@@ -19,7 +19,7 @@ export default function AuthProvider({ children }) {
                 if (response.ok) {
                     return response.json()
                         .then((data) => {
-                            console.log("currentUser : check login status");
+                            console.log('currentUser : check login status');
                             setCurrentUser(data);
                             setLoginStatus(true);
                         })
@@ -34,7 +34,7 @@ export default function AuthProvider({ children }) {
             setCurrentUser(user);
         }
         catch (error) {
-            console.log("Error while logging", error.message);
+            console.log('Error while logging', error.message);
         }
     };
 
@@ -46,7 +46,7 @@ export default function AuthProvider({ children }) {
                         return response.json()
                             .then((data) => {
                                 setCurrentUser(null);
-                                history.push("/");
+                                history.push('/');
                                 console.info(data);
                             })
                     } else {
@@ -58,7 +58,7 @@ export default function AuthProvider({ children }) {
                 })
         }
         catch (error) {
-            console.log("Error while logging out", error.message);
+            console.log('Error while logging out', error.message);
         }
     };
 

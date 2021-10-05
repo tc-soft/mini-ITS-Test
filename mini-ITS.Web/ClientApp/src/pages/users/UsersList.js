@@ -88,8 +88,8 @@ function UsersList(props) {
             setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [...prevState.filter.filter(x => x.name !== 'Department'), {
-                    name: "Department",
-                    operator: "=",
+                    name: 'Department',
+                    operator: '=',
                     value: department
                 }],
                 page: 1
@@ -100,8 +100,8 @@ function UsersList(props) {
             setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [...prevState.filter, {
-                    name: "Department",
-                    operator: "=",
+                    name: 'Department',
+                    operator: '=',
                     value: department
                 }],
                 page: 1
@@ -112,8 +112,8 @@ function UsersList(props) {
             setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [{
-                    name: "Department",
-                    operator: "=",
+                    name: 'Department',
+                    operator: '=',
                     value: department
                 }],
                 page: 1
@@ -129,8 +129,8 @@ function UsersList(props) {
             setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [...prevState.filter.filter(x => x.name !== 'Role'), {
-                    name: "Role",
-                    operator: "=",
+                    name: 'Role',
+                    operator: '=',
                     value: role
                 }],
                 page: 1
@@ -141,8 +141,8 @@ function UsersList(props) {
             setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [...prevState.filter, {
-                    name: "Role",
-                    operator: "=",
+                    name: 'Role',
+                    operator: '=',
                     value: role
                 }],
                 page: 1
@@ -153,8 +153,8 @@ function UsersList(props) {
             setPagedQuery(prevState => ({
                 ...prevState,
                 filter: [{
-                    name: "Role",
-                    operator: "=",
+                    name: 'Role',
+                    operator: '=',
                     value: role
                 }],
                 page: 1
@@ -206,26 +206,26 @@ function UsersList(props) {
     return (
         <React.Fragment>
             <button
-                onClick={() => { handleDepartmentFilter("IT") }}
-                disabled={activeDepartmentFilter === "IT" ? true : false}
+                onClick={() => { handleDepartmentFilter('IT') }}
+                disabled={activeDepartmentFilter === 'IT' ? true : false}
             >
                 Department: IT
             </button>
             <button
-                onClick={() => { handleDepartmentFilter("Sales") }}
-                disabled={activeDepartmentFilter === "Sales" ? true : false}
+                onClick={() => { handleDepartmentFilter('Sales') }}
+                disabled={activeDepartmentFilter === 'Sales' ? true : false}
             >
                 Department: Sales
             </button>
             <button
-                onClick={() => { handleRoleFilter("User") }}
-                disabled={activeRoleFilter === "User" ? true : false}
+                onClick={() => { handleRoleFilter('User') }}
+                disabled={activeRoleFilter === 'User' ? true : false}
             >
                 Role: User
             </button>
             <button
-                onClick={() => { handleRoleFilter("Manager") }}
-                disabled={activeRoleFilter === "Manager" ? true : false}
+                onClick={() => { handleRoleFilter('Manager') }}
+                disabled={activeRoleFilter === 'Manager' ? true : false}
             >
                 Role: Manager
             </button>
@@ -254,7 +254,7 @@ function UsersList(props) {
                         const record = index + ((users.currentPage - 1) * users.resultsPerPage) + 1;
                         return (
                             <tr key={index}>
-                                <td>{String("0" + (record)).slice(-2)}</td>
+                                <td>{String('0' + (record)).slice(-2)}</td>
                                 <td>{user.login}</td>
                                 <td>{user.firstName}</td>
                                 <td>{user.lastName}</td>
