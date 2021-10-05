@@ -30,6 +30,7 @@ namespace mini_ITS.Web.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
+
         [HttpPost]
         //[ValidateAntiForgeryToken]
         //[AutoValidateAntiforgeryToken]
