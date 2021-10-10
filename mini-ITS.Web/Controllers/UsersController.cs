@@ -16,7 +16,9 @@ using System.Threading.Tasks;
 
 namespace mini_ITS.Web.Controllers
 {
-    public class UsersController : Controller
+    //[ApiController]
+    //[Route("[controller]")]
+    public class UsersController : ControllerBase
     {
         private readonly IUsersService _usersServices;
         private readonly IMapper _mapper;
@@ -49,7 +51,7 @@ namespace mini_ITS.Web.Controllers
                     var principal = new ClaimsPrincipal(identity);
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    return new JsonResult(new
+                    return Ok(new JsonResult(new
                     {
                         login = usersDto.Login,
                         firstName = usersDto.FirstName,
@@ -57,7 +59,7 @@ namespace mini_ITS.Web.Controllers
                         department = usersDto.Department,
                         role = usersDto.Role,
                         isLogged = true
-                    });
+                    }));
                 }
                 else
                 {
@@ -71,8 +73,8 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpGet]
-        [CookieAuth]
-        [ValidateAntiForgeryToken]
+        //[CookieAuth]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginStatusAsync()
         {
             try
@@ -111,8 +113,8 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpGet]
-        [CookieAuth]
-        [Authorize("Admin")]
+        //[CookieAuth]
+        //[Authorize("Admin")]
         public async Task<IActionResult> IndexAsync([FromQuery] SqlPagedQuery<Users> sqlPagedQuery)
         {
             try
