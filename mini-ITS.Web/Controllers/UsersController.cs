@@ -9,6 +9,7 @@ using mini_ITS.Core.Dto;
 using mini_ITS.Core.Models;
 using mini_ITS.Core.Services;
 using mini_ITS.Web.Framework;
+using mini_ITS.Web.Models.UsersController;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -73,14 +74,14 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpGet]
-        //[CookieAuth]
+        [CookieAuth]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginStatusAsync()
         {
             try
             {
                 var usersDto = await _usersServices.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-                
+
                 return new JsonResult(new
                 {
                     login = usersDto.Login,
@@ -113,8 +114,8 @@ namespace mini_ITS.Web.Controllers
         }
 
         [HttpGet]
-        //[CookieAuth]
-        //[Authorize("Admin")]
+        [CookieAuth]
+        [Authorize("Admin")]
         public async Task<IActionResult> IndexAsync([FromQuery] SqlPagedQuery<Users> sqlPagedQuery)
         {
             try
@@ -239,13 +240,6 @@ namespace mini_ITS.Web.Controllers
             return Content("Eeeejjj, masz brak uprawnień...");
         }
 
-
-        public class LoginData
-        {
-            public string Login { get; set; }
-
-            public string Password { get; set; }
-        }
 
         public class ChangePassword
         {
