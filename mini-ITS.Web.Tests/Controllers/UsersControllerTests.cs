@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using mini_ITS.Core.Database;
-using mini_ITS.Core.Models;
-using mini_ITS.Web.Models.UsersController;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using mini_ITS.Core.Database;
+using mini_ITS.Core.Models;
 
 namespace mini_ITS.Web.Tests.Controllers
 {
@@ -83,14 +80,35 @@ namespace mini_ITS.Web.Tests.Controllers
                 ResultsPerPage = 5
             };
 
-            var json = JsonConvert.SerializeObject(sqlPagedQuery);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var encodedContent = new FormUrlEncodedContent(json);
+            var queryParameters = new Dictionary<string, string>();
 
-            String encoded = URLEncoder.encode(sqlPagedQuery, StandardCharsets.UTF_8);
+            queryParameters.Add("SortColumnName", "Login");
+            queryParameters.Add("SortDirection", "DESC");
+            queryParameters.Add("Page", "1");
+            queryParameters.Add("ResultsPerPage", "5");
 
-            var response = await TestClient.GetAsync(ApiRoutes.Users.Index, new FormUrlEncodedContent(json);
+            sqlPagedQuery.Filter
+                .Select((filter, index) => (filter, index)).ToList()
+                .ForEach((x) =>
+                {
+                    queryParameters.Add($"Filter[{x.index}].Name", x.filter.Name);
+                    queryParameters.Add($"Filter[{x.index}].Operator", x.filter.Operator);
+                    queryParameters.Add($"Filter[{x.index}].Value", x.filter.Value);
+                });
+
+            
+            foreach (var item in sqlPagedQuery.Filter.Select((filter, index) => (filter, index)))
+            {
+                queryParameters.Add($"Filter[{item.index}].Name", item.filter.Name);
+                queryParameters.Add($"Filter[{item.index}].Operator", item.filter.Operator);
+                queryParameters.Add($"Filter[{item.index}].Value", item.filter.Value);
+            }
+
+            var queryString = new FormUrlEncodedContent(queryParameters).ReadAsStringAsync();
+            //var queryString = await dictFormUrlEncoded.ReadAsStringAsync();
+
+            var response = await TestClient.GetAsync($"{ApiRoutes.Users.Index}?{queryString}");
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
