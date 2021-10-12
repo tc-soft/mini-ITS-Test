@@ -6,8 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace mini_ITS.Web.Tests.Controllers
@@ -17,33 +15,32 @@ namespace mini_ITS.Web.Tests.Controllers
         [Test]
         public async Task UsersController_LoginAsync()
         {
-            await LoginAsync();
-            var response = await TestClient.GetAsync(ApiRoutes.Users.LoginStatus);
+            //Login Unauthorized
+            var response = await LoginAsync1();
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+            response = await TestClient.GetAsync(ApiRoutes.Users.LoginStatus);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
+
+            //Logout
+            response = await TestClient.DeleteAsync(ApiRoutes.Users.Logout);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            response = await TestClient.GetAsync(ApiRoutes.Users.LoginStatus);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
 
-            //var response = responseStatusCode.Content.ReadAsStreamAsync().Result;
-            //var response = responseStatusCode.Content.ReadAsStringAsync().Result;
-
-            var result = await response.Content.ReadAsStringAsync();
-
-            //var respondLogin = await response.Content.ReadFromJsonAsync<RespondLogin>();
+            //Login
+            response = await LoginAsync();
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            response = await TestClient.GetAsync(ApiRoutes.Users.LoginStatus);
+            var results = await response.Content.ReadFromJsonAsync<RespondLogin>();
             
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
+            TestContext.Out.WriteLine($"Login      : {results.Login}");
+            TestContext.Out.WriteLine($"FirstName  : {results.FirstName}");
+            TestContext.Out.WriteLine($"LastName   : {results.LastName}");
+            TestContext.Out.WriteLine($"Department : {results.Department}");
+            TestContext.Out.WriteLine($"Role       : {results.Role}");
+            TestContext.Out.WriteLine($"isLogged   : {results.isLogged}\n");
 
-            var respondLogin = JsonSerializer.Deserialize<RespondLogin>(result, options);
-
-            //var respondLogin = JsonConvert.DeserializeObject<RespondLogin>(response);
-            //var respondLogin = await JsonSerializer.DeserializeAsync<RespondLogin>(result);
-
-            TestContext.Out.WriteLine($"Login      : {respondLogin.Login}");
-            TestContext.Out.WriteLine($"FirstName  : {respondLogin.FirstName}");
-            TestContext.Out.WriteLine($"LastName   : {respondLogin.LastName}");
-            TestContext.Out.WriteLine($"Department : {respondLogin.Department}");
-            TestContext.Out.WriteLine($"Role       : {respondLogin.Role}");
-            TestContext.Out.WriteLine($"isLogged   : {respondLogin.isLogged}");
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test]

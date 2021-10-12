@@ -9,6 +9,7 @@ namespace mini_ITS.Web.Tests
     public class IntegrationTest
     {
         protected readonly HttpClient TestClient;
+        //private MyHttpClientSetup _setup;
 
         protected IntegrationTest()
         {
@@ -17,7 +18,7 @@ namespace mini_ITS.Web.Tests
             TestClient = appFactory.CreateClient();
         }
 
-        protected async Task<bool> LoginAsync()
+        protected async Task<HttpResponseMessage> LoginAsync()
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Users.Login, new LoginData
             {
@@ -25,7 +26,18 @@ namespace mini_ITS.Web.Tests
                 Password = "admin"
             });
 
-            return response.StatusCode == System.Net.HttpStatusCode.OK ? true : false ;
+            return response;
+        }
+
+        protected async Task<HttpResponseMessage> LoginAsync1()
+        {
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Users.Login, new LoginData
+            {
+                Login = "admin",
+                Password = "admin1"
+            });
+
+            return response;
         }
     }
 }
