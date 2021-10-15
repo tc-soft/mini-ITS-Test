@@ -8,7 +8,7 @@ namespace mini_ITS.Web.Tests
 {
     public static class ApiRoutes
     {
-        private static readonly string _baseUrl = "https://localhost:44375/";
+        private static readonly string _baseUrl = "https://localhost:44375/api/";
 
         public static class Users
         {

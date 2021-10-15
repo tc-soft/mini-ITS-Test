@@ -9,7 +9,6 @@ using mini_ITS.Core.Dto;
 using mini_ITS.Core.Models;
 using mini_ITS.Core.Services;
 using mini_ITS.Web.Framework;
-using mini_ITS.Web.Models.UsersController;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -17,8 +16,8 @@ using System.Threading.Tasks;
 
 namespace mini_ITS.Web.Controllers
 {
-    //[ApiController]
-    //[Route("[controller]")]
+    [ApiController]
+    [Route("api/[controller]/[action]")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _usersServices;
@@ -52,7 +51,7 @@ namespace mini_ITS.Web.Controllers
                     var principal = new ClaimsPrincipal(identity);
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    return Ok(new JsonResult(new
+                    return new JsonResult(new
                     {
                         login = usersDto.Login,
                         firstName = usersDto.FirstName,
@@ -60,7 +59,7 @@ namespace mini_ITS.Web.Controllers
                         department = usersDto.Department,
                         role = usersDto.Role,
                         isLogged = true
-                    }));
+                    });
                 }
                 else
                 {
@@ -75,13 +74,13 @@ namespace mini_ITS.Web.Controllers
 
         [HttpGet]
         [CookieAuth]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginStatusAsync()
         {
             try
             {
                 var usersDto = await _usersServices.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-
+                
                 return new JsonResult(new
                 {
                     login = usersDto.Login,
@@ -240,6 +239,13 @@ namespace mini_ITS.Web.Controllers
             return Content("Eeeejjj, masz brak uprawnień...");
         }
 
+
+        public class LoginData
+        {
+            public string Login { get; set; }
+
+            public string Password { get; set; }
+        }
 
         public class ChangePassword
         {

@@ -1,6 +1,6 @@
 import { fetchWrapper } from '../api/FetchWrapper';
 
-const baseUrl = '/Users';
+const baseUrl = 'api/Users';
 
 export const usersServices = {
     index,

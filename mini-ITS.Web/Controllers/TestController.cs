@@ -13,7 +13,7 @@ using mini_ITS.Web.Framework;
 namespace mini_ITS.Web.Controllers
 {
     //[Produces("application/json")]
-    public class TestController : Controller
+    public class TestController : ControllerBase
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IUsersService _usersService;
